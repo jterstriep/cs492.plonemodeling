@@ -1,0 +1,17 @@
+cs492.plonemodeling Installation
+--------------------------------
+
+To install cs492.plonemodeling using zc.buildout and the plone.recipe.zope2instance
+recipe to manage your project, you can do this:
+
+* Add ``cs492.plonemodeling`` to the list of eggs to install, e.g.:
+
+    [buildout]
+    ...
+    eggs =
+        ...
+        cs492.plonemodeling
+       
+* Re-run buildout, e.g. with:
+
+    $ ./bin/buildout
