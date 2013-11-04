@@ -14,12 +14,13 @@ from plone.namedfile.field import NamedBlobImage, NamedBlobFile
 from plone.namedfile.interfaces import IImageScaleTraversable
 
 
+from plone.supermodel import model
 from cs492.plonemodeling import MessageFactory as _
 
 
 # Interface class; used to define content-type schema.
 
-class IJob(form.Schema, IImageScaleTraversable):
+class IJob(model.Schema, IImageScaleTraversable):
     """
     Job which needs to be run on scientific model
     """

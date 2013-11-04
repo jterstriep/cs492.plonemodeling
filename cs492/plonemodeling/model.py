@@ -13,12 +13,13 @@ from plone.namedfile.field import NamedImage, NamedFile
 from plone.namedfile.field import NamedBlobImage, NamedBlobFile
 from plone.namedfile.interfaces import IImageScaleTraversable
 
+from plone.supermodel import model
 from cs492.plonemodeling import MessageFactory as _
 
 
 # Interface class; used to define content-type schema.
 
-class IModel(form.Schema, IImageScaleTraversable):
+class IModel(model.Schema, IImageScaleTraversable):
     """
     AWS instance which will run a scientific model
     """
