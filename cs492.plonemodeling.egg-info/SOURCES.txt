@@ -13,5 +13,5 @@ cs492.plonemodeling.egg-info/requires.txt
 cs492.plonemodeling.egg-info/top_level.txt
 cs492/plonemodeling/__init__.py
 cs492/plonemodeling/job.py
-cs492/plonemodeling/model.py
 cs492/plonemodeling/tests.py
+cs492/plonemodeling/virtual_machine.py

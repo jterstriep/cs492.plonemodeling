@@ -52,6 +52,14 @@ def test_suite():
 
         # -*- extra stuff goes here -*-
 
+        # Integration tests for VirtualMachine
+        ztc.ZopeDocFileSuite(
+            'VirtualMachine.txt',
+            package='cs492.plonemodeling',
+            optionflags = OPTION_FLAGS,
+            test_class=TestCase),
+
+
         # Integration tests for Job
         ztc.ZopeDocFileSuite(
             'Job.txt',
