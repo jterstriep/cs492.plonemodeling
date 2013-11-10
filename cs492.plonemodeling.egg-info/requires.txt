@@ -1,4 +1,0 @@
-setuptools
-plone.app.dexterity [grok]
-plone.namedfile [blobs]
-boto
