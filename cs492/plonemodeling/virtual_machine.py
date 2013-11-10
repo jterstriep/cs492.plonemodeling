@@ -13,69 +13,51 @@ from plone.namedfile.field import NamedImage, NamedFile
 from plone.namedfile.field import NamedBlobImage, NamedBlobFile
 from plone.namedfile.interfaces import IImageScaleTraversable
 
-from z3c.relationfield.schema import RelationChoice
-from plone.formwidget.contenttree import ObjPathSourceBinder
 
-from zope.lifecycleevent.interfaces import IObjectAddedEvent
-from Products.CMFCore.utils import getToolByName
-
-from plone.supermodel import model
 from cs492.plonemodeling import MessageFactory as _
 
-from cs492.plonemodeling.virtual_machine import IVirtualMachine
-import boto.ec2
 
 # Interface class; used to define content-type schema.
 
-class IJob(model.Schema, IImageScaleTraversable):
+class IVirtualMachine(form.Schema, IImageScaleTraversable):
     """
-    Job which needs to be run on scientific model
+    Specification of an EC2 instance
     """
 
     # If you want a schema-defined interface, delete the model.load
     # line below and delete the matching file in the models sub-directory.
     # If you want a model-based interface, edit
-    # models/job.xml to define the content type.
+    # models/virtual_machine.xml to define the content type.
 
-    # form.model("models/job.xml")
-    startString = schema.Text(
-            title=_(u"command used to start the model")
-    )
-    start = schema.Datetime(
-            title=_(u"Start time"),
-            required=False,
+    #form.model("models/virtual_machine.xml")
+
+    accessKey = schema.TextLine(
+            title=_(u"AWS Access Key"),
     )
 
-    end = schema.Datetime(
-            title=_(u"End time"),
-            required=False,
+    secretKey = schema.Text(
+            title=_(u"AWS Secret Key"),
     )
 
-    instance = schema.Text(
-	    title=_(u"Instance location"),
-	    required=False,
-	)
-	
-    virtualMachine = RelationChoice(
-	    title=_(u"Virtual machine"),
-	    source=ObjPathSourceBinder(object_provides=IVirtualMachine.__identifier__),
-	    required=True,
-	)
+    machineImage = schema.Text(
+            title=_(u"Amazon Machine Image"),
+    )
+
 
 # Custom content-type class; objects created for this content type will
 # be instances of this class. Use this class to add content-type specific
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
 
-class Job(Container):
-    grok.implements(IJob)
+class VirtualMachine(Container):
+    grok.implements(IVirtualMachine)
 
     # Add your class methods and properties here
 
 
 # View class
 # The view will automatically use a similarly named template in
-# job_templates.
+# virtual_machine_templates.
 # Template filenames should be all lower case.
 # The view will render when you request a content object with this
 # interface with "/@@sampleview" appended.
@@ -86,7 +68,7 @@ class Job(Container):
 class SampleView(grok.View):
     """ sample view class """
 
-    grok.context(IJob)
+    grok.context(IVirtualMachine)
     grok.require('zope2.View')
 
     # grok.name('view')
