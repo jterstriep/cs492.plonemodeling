@@ -1,4 +1,5 @@
 *.pyc
+cs492.plonemodeling.egg-info/
 bin
 develop-eggs/
 eggs/
