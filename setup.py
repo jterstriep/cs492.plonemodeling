@@ -30,6 +30,7 @@ setup(name='cs492.plonemodeling',
           'plone.namedfile [blobs]',
           # -*- Extra requirements: -*-
           'boto',
+          'plone.app.relationfield',
       ],
       entry_points="""
       # -*- Entry points: -*-
