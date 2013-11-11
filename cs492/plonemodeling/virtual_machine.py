@@ -35,11 +35,11 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
             title=_(u"AWS Access Key"),
     )
 
-    secretKey = schema.Text(
+    secretKey = schema.TextLine(
             title=_(u"AWS Secret Key"),
     )
 
-    machineImage = schema.Text(
+    machineImage = schema.TextLine(
             title=_(u"Amazon Machine Image"),
     )
 

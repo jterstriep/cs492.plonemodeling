@@ -23,7 +23,9 @@ from plone.supermodel import model
 from cs492.plonemodeling import MessageFactory as _
 
 from cs492.plonemodeling.virtual_machine import IVirtualMachine
+from Products.statusmessages.interfaces import IStatusMessage
 import boto.ec2
+import time
 
 # Interface class; used to define content-type schema.
 
@@ -38,7 +40,7 @@ class IJob(model.Schema, IImageScaleTraversable):
     # models/job.xml to define the content type.
 
     # form.model("models/job.xml")
-    startString = schema.Text(
+    startString = schema.TextLine(
             title=_(u"command used to start the model")
     )
     start = schema.Datetime(
@@ -51,7 +53,7 @@ class IJob(model.Schema, IImageScaleTraversable):
             required=False,
     )
 
-    instance = schema.Text(
+    instance = schema.TextLine(
 	    title=_(u"Instance location"),
 	    required=False,
 	)
@@ -92,3 +94,19 @@ class SampleView(grok.View):
     # grok.name('view')
 
     # Add view methods here
+
+@grok.subscribe(IJob, IObjectAddedEvent)
+def createJob(job, event):
+    virtualMachine = getToolByName(job, 'virtualMachine').to_object
+    accessKey = virtualMachine.accessKey
+    secretKey = virtualMachine.secretKey
+    machineImage = virtualMachine.machineImage
+    conn = boto.ec2.connect_to_region("us-west-2", aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
+    reservation = conn.run_instances(machineImage,instance_type='t1.micro')
+    instance = reservation.instances[0]
+    status = instance.update()
+    while status == 'pending':
+        time.sleep(10)
+        status = instance.update()
+    if status == 'running':
+        job.instance = instance.public_dns_name
