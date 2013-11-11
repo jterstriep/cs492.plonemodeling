@@ -21,6 +21,14 @@
     name="cs492.plonemodeling"
     directory="resources" />
 
+  <!-- Register custom view here -->
+  <browser:page
+    name="get_next_job"
+    for="*"
+    permission="zope2.View"
+    class=".get_next_job.GetNextJob"
+    />
+
   <i18n:registerTranslations directory="locales" />
 
   <!-- Register an extension profile to make the product installable
