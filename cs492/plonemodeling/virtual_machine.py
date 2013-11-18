@@ -13,6 +13,11 @@ from plone.namedfile.field import NamedImage, NamedFile
 from plone.namedfile.field import NamedBlobImage, NamedBlobFile
 from plone.namedfile.interfaces import IImageScaleTraversable
 
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
+
+import random
+import string
+
 
 from cs492.plonemodeling import MessageFactory as _
 
@@ -41,6 +46,11 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
 
     machineImage = schema.TextLine(
             title=_(u"Amazon Machine Image"),
+    )
+
+    monitorString = schema.TextLine(
+            title=_(u"Monitor Identifier"),
+            required=False
     )
 
 
@@ -74,3 +84,7 @@ class SampleView(grok.View):
     # grok.name('view')
 
     # Add view methods here
+
+@grok.subscribe(IVirtualMachine, IObjectAddedEvent)
+def createVirtualMachine(virtual_machine, event):
+    virtual_machine.monitorString = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(5))

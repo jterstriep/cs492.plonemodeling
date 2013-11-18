@@ -15,6 +15,7 @@ from plone.namedfile.interfaces import IImageScaleTraversable
 
 from z3c.relationfield.schema import RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
+from Acquisition import aq_parent, aq_inner
 
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from Products.CMFCore.utils import getToolByName
@@ -133,7 +134,16 @@ class SampleView(grok.View):
 
 @grok.subscribe(IJob, IObjectAddedEvent)
 def createJob(job, event):
+    if job.job_status != "Queued":
+        job.job_status = "Pending"
+        return
     virtualMachine = getToolByName(job, 'virtualMachine').to_object
+    context = aq_inner(job)
+    catalog = getToolByName(context, 'portal_catalog')
+    jobs = catalog.searchResults(portal_type='cs492.plonemodeling.job')
+    for job_query in jobs:
+	    if getToolByName(job_query.getObject(), 'virtualMachine').to_object == virtualMachine and job_query.getObject().job_status == "Running":
+	        return
     accessKey = virtualMachine.accessKey
     secretKey = virtualMachine.secretKey
     machineImage = virtualMachine.machineImage
