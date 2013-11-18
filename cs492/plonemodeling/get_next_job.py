@@ -1,7 +1,8 @@
 import json
 from urlparse import parse_qs
 
-
+## logging for demo
+import logging
 
 ## for testing
 ## actual values will be gotten from the queue
@@ -24,6 +25,11 @@ class GetNextJob(object):
         """"""
         ## self.hello_name = getattr(self.context, 'hello_name', 'World')
         ##return self.template()
+
+        ## logging for demo
+        logger = logging.getLogger("Plone")
+        logger.info("Job requested")
+
         method = self.request['REQUEST_METHOD']
         if method != 'GET':
             response = self.request.response

@@ -22,10 +22,14 @@ from Products.CMFCore.utils import getToolByName
 from plone.supermodel import model
 from cs492.plonemodeling import MessageFactory as _
 
+import socket
+
 from cs492.plonemodeling.virtual_machine import IVirtualMachine
 from Products.statusmessages.interfaces import IStatusMessage
 import boto.ec2
 import time
+
+import logging
 
 # Interface class; used to define content-type schema.
 
@@ -101,8 +105,12 @@ def createJob(job, event):
     accessKey = virtualMachine.accessKey
     secretKey = virtualMachine.secretKey
     machineImage = virtualMachine.machineImage
+    ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/Plone/"
+    logger = logging.getLogger("Plone")
+    logger.info(ploneLocation)
+    startScript = "#!/bin/bash \npython3 /usr/bin/monitor.py " + ploneLocation
     conn = boto.ec2.connect_to_region("us-west-2", aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
-    reservation = conn.run_instances(machineImage,instance_type='t1.micro')
+    reservation = conn.run_instances(machineImage,instance_type='t1.micro',user_data=startScript)
     instance = reservation.instances[0]
     status = instance.update()
     while status == 'pending':
