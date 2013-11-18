@@ -31,6 +31,15 @@ import time
 
 import logging
 
+job_status_list = SimpleVocabulary(
+    [SimpleTerm(value=u'Queued', title=_(u'Queued')),
+     SimpleTerm(value=u'Started', title=_(u'Started')),
+     SimpleTerm(value=u'Finished', title=_(u'Finished')),
+     SimpleTerm(value=u'Running', title=_(u'Running')),
+     SimpleTerm(value=u'Terminated', title=_(u'Terminated')),
+     SimpleTerm(value=u'Pending', title=_(u'Pending'))]
+    )
+
 # Interface class; used to define content-type schema.
 
 class IJob(model.Schema, IImageScaleTraversable):
@@ -57,6 +66,12 @@ class IJob(model.Schema, IImageScaleTraversable):
             required=False,
     )
 
+    job_status = schema.Choice(
+            title=_(u"Job Status"),
+            vocabulary=job_status_list,
+            required=False,
+    )
+
     instance = schema.TextLine(
 	    title=_(u"Instance location"),
 	    required=False,
@@ -75,6 +90,23 @@ class IJob(model.Schema, IImageScaleTraversable):
 
 class Job(Container):
     grok.implements(IJob)
+
+    def getTitle(self):
+	return self.title
+
+    def getStatus(self):
+	return self.job_status
+
+    def getStartTime(self):
+	if self.start is None:
+	    return "--"
+	return self.start
+
+    def getEndTime(self):
+	return self.end
+
+    def getVM(self):
+	return self.virtualMachine.to_object
 
     # Add your class methods and properties here
 

@@ -29,6 +29,14 @@
     class=".get_next_job.GetNextJob"
     />
 
+  <browser:page
+    name="jobs_view"
+    for="*"
+    permission="zope2.View"
+    class=".jobs_view.JobsView"
+
+    />
+
   <i18n:registerTranslations directory="locales" />
 
   <!-- Register an extension profile to make the product installable

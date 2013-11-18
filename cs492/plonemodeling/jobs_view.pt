@@ -1,0 +1,51 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      metal:use-macro="context/main_template/macros/master">
+
+<script>
+
+</script>
+
+    <metal:block fill-slot="content-core">
+     
+     <div style= "width:80%; margin: 0 auto; background-color:#FFFFCC; text-align:center">
+     <div style = "margin: 0 auto">
+            <h1 id = 'ttt' onclick = "document.getElementById('bbb').textContent = 'aaa' "> Job Queue Browser View</h1>
+
+     </div>
+    
+
+
+	<div style = "float:right; margin-right:10px">Sort by: 
+		<select>
+			  <option value="start_time">Start time</option>
+			  <option value="job_status" onclick = "aaa();">Job Status</option>		 
+		</select> 
+		<button>Refresh?</button>
+	 <br><br></div>
+   <div id = 'bbb'>  
+   <table style = "border:1px solid silver;width:100%; text-align:center" id = "aaa">
+	<th>Index</th><th>Job</th><th>VM</th> <th>URL</th><th>Start time</th><th>Status</th><th>Action</th>
+	<tr tal:repeat="job view/all_jobs" height = "40px">
+		<td>--</td>
+		<td tal:content = "python:job.getObject().getTitle()">Job</td>
+		<td tal:content = "python:job.getObject().getVM()">Vm</td>
+		<td><a tal:content = "python:job.getURL()"> URL </a> </td>
+		<td><a tal:content = "python:job.getObject().getStartTime()"> Start time </a> </td>
+		<td tal:content = "python:job.getObject().getStatus()">Status</td>
+		<td >
+			<select>
+			  <option value="none">Select..</option>		 
+			</select> 
+		</td>
+	</tr>
+     </table>
+</div>
+     </div>
+
+    </metal:block>
+ 
+
+
+</html>
