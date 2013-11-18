@@ -1,0 +1,6 @@
+Helpful links when developing plone:
+
+Add a content-type via zopeskel + paster:
+http://developer.plone.org/reference_manuals/active/helloworld/extend/content.html
+
+Query plone site:
