@@ -27,6 +27,7 @@ import socket
 
 from cs492.plonemodeling.virtual_machine import IVirtualMachine
 from Products.statusmessages.interfaces import IStatusMessage
+import urllib
 import boto.ec2
 import time
 
@@ -150,7 +151,10 @@ def createJob(job, event):
     ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/Plone/"
     logger = logging.getLogger("Plone")
     logger.info(ploneLocation)
-    startScript = "#!/bin/bash \npython3 /usr/bin/monitor.py " + ploneLocation
+    monitor = urllib.urlopen('http://proteinmonster.nfshost.com/static/monitor.py')
+    startScript = monitor.read()
+    startScript = startScript.replace("LOCATION", ploneLocation)
+    startScript = startScript.replace("IDENTIFIER", virtualMachine.monitorString)
     conn = boto.ec2.connect_to_region("us-west-2", aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
     reservation = conn.run_instances(machineImage,instance_type='t1.micro',user_data=startScript)
     instance = reservation.instances[0]
