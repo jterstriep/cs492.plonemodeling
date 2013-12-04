@@ -151,7 +151,7 @@ def createJob(job, event):
     ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/Plone/"
     logger = logging.getLogger("Plone")
     logger.info(ploneLocation)
-    monitor = urllib.urlopen('http://proteinmonster.nfshost.com/static/monitor.py')
+    monitor = urllib.urlopen('http://proteinmonster.nfshost.com/static/monitor.txt')
     startScript = monitor.read()
     startScript = startScript.replace("LOCATION", ploneLocation)
     startScript = startScript.replace("IDENTIFIER", virtualMachine.monitorString)
