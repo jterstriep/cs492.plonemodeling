@@ -4,4 +4,4 @@ bin
 develop-eggs/
 eggs/
 *.egg/
-
+*~
