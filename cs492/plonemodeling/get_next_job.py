@@ -57,5 +57,4 @@ class GetNextJob(object):
                     vm_job.getObject().job_status = "Running"
                     return json.dumps({ 'response': 'OK', 'start_string': vm_job.getObject().startString  })
 		
-		    	
-        return "{'response': 'NOTOK', 'reason': 'invalidHash', 'hash': '" + hashValue +"'}"
+        return json.dumps({'response': 'NOTOK', 'reason': 'invalidHash', 'hash': hashValue })		    	
