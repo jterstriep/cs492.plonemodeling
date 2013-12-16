@@ -62,7 +62,8 @@ class JobsView(BrowserView):
 	joblist=[]
 	for brain in all_jobs:
 	    joblist.append(brain)
-	   
+	    print brain['modified']
+           
 	joblist.sort(time_compare)
 	self.all_jobs = getattr(self.context, 'all_jobs', joblist)
 	return self.template()

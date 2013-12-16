@@ -120,7 +120,8 @@ class Job(Container):
     def getId(self):
 	return self.id;
 
-  
+    def getCreater(self):
+	return self.Creater;
 
 
     def getJobList(self):

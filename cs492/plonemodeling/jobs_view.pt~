@@ -32,7 +32,7 @@
 		<td> <a href = "" tal:attributes = "href python:job.getURL()" tal:content = "python:job['Title']" target= "_BLANK"> Job</a></td>
                 <td tal:content = "python:job['Creator']">Creater</td>
 		<td tal:content = "python:job.getObject().getVMTitle()">Vm</td>
-		<td><a> - </a> </td>
+		<td><a> currently empty  </a> </td>
 		<td><a tal:content = "python:job.getObject().getStartTime()">Start time</a></td>
 		<td tal:content = "python:job.getObject().getStatus()">Status</td>
 

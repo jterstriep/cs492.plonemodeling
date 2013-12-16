@@ -37,8 +37,13 @@
 
     />
 
- 
-  
+    <browser:page
+    name="test_view"
+    for="*"
+    permission="zope2.View"
+    class=".test_view.TestView"
+
+    />
 
   <i18n:registerTranslations directory="locales" />
 

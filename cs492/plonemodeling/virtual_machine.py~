@@ -63,8 +63,6 @@ class VirtualMachine(Container):
     grok.implements(IVirtualMachine)
 
     # Add your class methods and properties here
-    def getTitle(self):
-	return self.title
 
 
 # View class
