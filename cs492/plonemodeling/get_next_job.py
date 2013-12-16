@@ -45,7 +45,7 @@ class GetNextJob(object):
         hashValue = str(parse_result['hash'][0])
         vms = catalog.searchResults(portal_type='cs492.plonemodeling.virtualmachine')
         for vm in vms:
-            if vm.monitorString == hashValue:
+            if vm.getObject().monitorString == hashValue:
                 jobs = catalog.searchResults(portal_type='cs492.plonemodeling.job')
                 vm_job = 0
                 for job in jobs:
