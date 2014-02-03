@@ -1,21 +1,14 @@
 from five import grok
 
-from z3c.form import group, field
 from zope import schema
-from zope.interface import invariant, Invalid
-from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 from plone.dexterity.content import Container
-from plone.directives import dexterity, form
-from plone.app.textfield import RichText
-from plone.namedfile.field import NamedImage, NamedFile
-from plone.namedfile.field import NamedBlobImage, NamedBlobFile
 from plone.namedfile.interfaces import IImageScaleTraversable
 
 from z3c.relationfield.schema import RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
-from Acquisition import aq_parent, aq_inner
+from Acquisition import aq_inner
 
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from Products.CMFCore.utils import getToolByName
@@ -27,7 +20,6 @@ import socket
 
 
 from cs492.plonemodeling.virtual_machine import IVirtualMachine
-from Products.statusmessages.interfaces import IStatusMessage
 import urllib
 import boto.ec2
 import time
@@ -76,15 +68,15 @@ class IJob(model.Schema, IImageScaleTraversable):
     )
 
     instance = schema.TextLine(
-	    title=_(u"Instance location"),
-	    required=False,
-	)
-	
+            title=_(u"Instance location"),
+            required=False,
+        )
+        
     virtualMachine = RelationChoice(
-	    title=_(u"Virtual machine"),
-	    source=ObjPathSourceBinder(object_provides=IVirtualMachine.__identifier__),
-	    required=True,
-	)
+            title=_(u"Virtual machine"),
+            source=ObjPathSourceBinder(object_provides=IVirtualMachine.__identifier__),
+            required=True,
+        )
 
 # Custom content-type class; objects created for this content type will
 # be instances of this class. Use this class to add content-type specific
@@ -101,46 +93,46 @@ class Job(Container):
         self.indexList = []
 
     def getTitle(self):
-	return self.title
+        return self.title
 
     def getStatus(self):
-	return self.job_status
+        return self.job_status
 
     def getStartTime(self):
-	if self.start is None:
-	    return "--"
-	return self.start
+        if self.start is None:
+            return "--"
+        return self.start
 
     def getEndTime(self):
-	return self.end
+        return self.end
 
     def getVMTitle(self):
-	return self.virtualMachine.to_object.getTitle()
+        return self.virtualMachine.to_object.getTitle()
 
     def getId(self):
-	return self.id;
+        return self.id;
 
   
 
 
     def getJobList(self):
         print "enter"
-	context = aq_inner(self)
+        context = aq_inner(self)
         catalog = getToolByName(context, 'portal_catalog')
         all_jobs = catalog.searchResults(portal_type= 'cs492.plonemodeling.job',sort_on='modified', sort_order='ascending')
         for brain in all_jobs:
-	    self.indexList.append(brain);
-	
+            self.indexList.append(brain);
+        
     def getJobIndex(self):
         #get the joblist sorted by last modified time.
         if len(self.indexList) is 0:
-	    self.getJobList()
-	i = 0
+            self.getJobList()
+        i = 0
         for curJob in self.indexList:
-	    if curJob.getObject().getId() is self.getId():
-	        return i
+            if curJob.getObject().getId() is self.getId():
+                return i
             i = i+1
-	return "x"
+        return "x"
 
 
 # View class
@@ -173,8 +165,8 @@ def createJob(job, event):
     catalog = getToolByName(context, 'portal_catalog')
     jobs = catalog.searchResults(portal_type='cs492.plonemodeling.job')
     for job_query in jobs:
-	    if getToolByName(job_query.getObject(), 'virtualMachine').to_object == virtualMachine and job_query.getObject().job_status == "Running":
-	        return
+            if getToolByName(job_query.getObject(), 'virtualMachine').to_object == virtualMachine and job_query.getObject().job_status == "Running":
+                return
     accessKey = virtualMachine.accessKey
     secretKey = virtualMachine.secretKey
     machineImage = virtualMachine.machineImage
