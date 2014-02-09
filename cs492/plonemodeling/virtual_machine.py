@@ -1,7 +1,7 @@
 from five import grok
 
 from zope import schema
-
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from plone.dexterity.content import Container
 from plone.directives import form
 from plone.namedfile.interfaces import IImageScaleTraversable
@@ -13,6 +13,15 @@ import string
 
 
 from cs492.plonemodeling import MessageFactory as _
+
+region_list = SimpleVocabulary(
+    [SimpleTerm(value=u'us-east-1', title=_(u'us-east-1')),
+     SimpleTerm(value=u'us-west-1', title=_(u'us-west-1')),
+     SimpleTerm(value=u'us-west-2', title=_(u'us-west-2'))]
+    )
+
+instance_type_list = SimpleVocabulary([])
+
 
 
 # Interface class; used to define content-type schema.
@@ -36,6 +45,21 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
     secretKey = schema.TextLine(
             title=_(u"AWS Secret Key"),
     )
+
+    region = schema.Choice(
+            title=_(u"Region"),
+            vocabulary=region_list,
+            description = u"Perferably the list of available elements would be built dynamically ",
+            required=False,
+    )
+
+    instance_type = schema.Choice(
+            title=_(u"Instance Type"),
+            vocabulary=instance_type_list,
+            required=False,
+            description = u"Perferably the list of available elements would be built dynamically ",
+    )
+
 
     machineImage = schema.TextLine(
             title=_(u"Amazon Machine Image"),
