@@ -3,29 +3,47 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       metal:use-macro="context/main_template/macros/master">
 
-<script>
 
-</script>
+<head>
+ <metal:block metal:fill-slot="head_slot">
+  <metal:head_slot define-macro="head_slot">
+	    <metal:styleslot define-slot="style_slot" >
 
+		<style media="screen" type="text/css">
+		 .container-wrapper{width:80%; margin: 0 auto; background-color:#FFFFCC; text-align:center}
+		 .container{margin: 0 auto}
+		 .jobTable{margin-top:40px;border:1px solid white;width:100%; text-align:center}
+ 		 .jobTable th, td {text-align:center; border:1px solid white}
+		 .sortBox{float:right; margin-right:10px}
+		</style>
+
+	 </metal:styleslot>
+
+	 <!--<metal:styleslot define-slot="style_slot" >
+	   <link rel="stylesheet" type="text/css" media="screen"
+		  href="/++resource++cs492.plonemodeling/virtual_machine_templates/virtual_machine_view.css"/>
+	 </metal:styleslot>-->
+
+
+  </metal:head_slot>
+</metal:block>
+
+</head>
+	 
     <metal:block fill-slot="content-core">
      
-     <div style= "width:80%; margin: 0 auto; background-color:#FFFFCC; text-align:center">
-     <div style = "margin: 0 auto">
-            <h1 id = 'ttt' onclick = "document.getElementById('bbb').textContent = 'aaa' "> Job Queue Browser View</h1>
-
+     <div class = "container-wrapper">
+     <div class = "container">
+            <h1> Job Queue Browser View</h1>
      </div>
-    
-	
-
-	<div style = "float:right; margin-right:10px">Sort by: 
+	<div class = "sortBox">Sort by: 
 		<select>
 			  <option value="start_time">Start time</option>
 			  <option value="job_status">Job Status</option>		 
 		</select>
 	 <br><br></div>
-   <div>  
-
-   <table style = "border:1px solid silver;width:100%; text-align:center" >
+   	<div>  
+  	 <table class = "jobTable">
 	<th>Index</th><th>Job</th><th>Creater</th><th>VM</th> <th> dns </th><th>Start time</th><th>Status</th><th>Action</th>
 	<tr tal:repeat="job view/all_jobs" height = "40px">
 		<td tal:content = "python:job.getObject().getJobIndex()" >--</td>
@@ -35,21 +53,16 @@
 		<td><a> - </a> </td>
 		<td><a tal:content = "python:job.getObject().getStartTime()">Start time</a></td>
 		<td tal:content = "python:job.getObject().getStatus()">Status</td>
-
 		<td >
 			<select>
 			  <option value="none">Select..</option>		 
 			</select> 
 		</td>
 
-	</tr>
-
-     </table>
-</div>
+		</tr>
+	 </table>
+	</div>
      </div>
 
     </metal:block>
- 
-
-
 </html>

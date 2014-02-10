@@ -36,8 +36,6 @@
     class=".jobs_view.JobsView"
 
     />
-
- 
   
 
   <i18n:registerTranslations directory="locales" />

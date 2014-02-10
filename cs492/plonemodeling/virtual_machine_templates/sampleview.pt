@@ -5,23 +5,81 @@
       lang="en"
       metal:use-macro="context/main_template/macros/master"
       i18n:domain="cs492.plonemodeling">
+
+<head>
+ <metal:block metal:fill-slot="head_slot">
+  <metal:head_slot define-macro="head_slot">
+	    <metal:styleslot define-slot="style_slot" >
+
+		<style media="screen" type="text/css">
+		 .machineTable{background-color:#F0F0F0;width:80%;border:1px solid white}
+		 .machineTable th,td {border:1px solid white;text-align:center;}
+		</style>
+
+	 </metal:styleslot>
+
+	 <!--<metal:styleslot define-slot="style_slot" >
+	   <link rel="stylesheet" type="text/css" media="screen"
+		  href="/++resource++cs492.plonemodeling/virtual_machine_templates/virtual_machine_view.css"/>
+	 </metal:styleslot>-->
+
+
+  </metal:head_slot>
+</metal:block>
+
+</head>
+	 
 <body>
-
-<tal:comment tal:condition="nothing">
-    This is a sample view template. It will not be used for rendering the
-    content unless activated by creation of a view class with a matching name.
-</tal:comment>
-
 <metal:main fill-slot="content-core">
   <metal:content-core define-macro="content-core">
+    <br>
+	<div class = "try">aaa</div>
+    <table class = "machineTable">
+	<th>Region</th><th>Instance Type</th><th>AMI</th><th>Monitor Identifier</th><th>Status</th>
+	<tr>
+		<td><p tal:content="context/region"></p></td>
+		<td><p tal:content="context/instance_type"></p></td>
+		<td><p tal:content="context/machineImage"></p></td>
+		<td><p tal:content="context/monitorString"></p></td>
+		<td><p>unknown</p></td>
+	</tr>
+    </table>
 
-    <h2>
-        Rendered from
-        virtual_machine_templates/<span tal:replace="template/id" />
-    </h2>
+    <br><div><b>And if it is running..</b></div><br>
+    <table class = "machineTable">
+	<th>IP Address</th><th>Time runed</th><th>Time since last pull</th><th>Action</th>
+	<tr>
+		<td>ip address</td>
+		<td>x mins</td>
+		<td>x mins</td>
+		<td><button>Terminate</button></td>
+	</tr>
+    </table>
+
+    <br><div><b>And the jobs associated with this vm..</b></div><br>
+    
+    <table class = "machineTable" >
+	<th>Job</th><th>Creater</th><th>VM</th> <th> dns </th><th>Start time</th><th>Status</th><th>Action</th>
+	<tr tal:repeat="job view/getJobsOnThisVM" height = "40px">
+		<td> <a href = "" tal:attributes = "href python:job.getURL()" tal:content = "python:job['Title']" target= "_BLANK"> Job</a></td>
+                <td tal:content = "python:job['Creator']">Creater</td>
+		<td tal:content = "context/title">Vm</td>
+		<td><a> - </a> </td>
+		<td><a tal:content = "python:job.getObject().getStartTime()">Start time</a></td>
+		<td tal:content = "python:job.getObject().getStatus()">Status</td>
+
+		<td >
+			<select>
+			  <option value="none">Select..</option>		 
+			</select> 
+		</td>
+
+	</tr>
+
+     </table>
 
 
-    <div tal:content="context/Title">Title inserted here</div>
+  
 
   </metal:content-core>
 </metal:main>

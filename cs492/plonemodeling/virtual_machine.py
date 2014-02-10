@@ -5,13 +5,13 @@ from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from plone.dexterity.content import Container
 from plone.directives import form
 from plone.namedfile.interfaces import IImageScaleTraversable
-
+from Products.CMFCore.utils import getToolByName
+from Acquisition import aq_parent, aq_inner
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
-
+from z3c.form import button
 import random
 import string
-
-
+from zope.interface import Invalid
 from cs492.plonemodeling import MessageFactory as _
 
 region_list = SimpleVocabulary(
@@ -38,18 +38,10 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
 
     #form.model("models/virtual_machine.xml")
 
-    accessKey = schema.TextLine(
-            title=_(u"AWS Access Key"),
-    )
-
-    secretKey = schema.TextLine(
-            title=_(u"AWS Secret Key"),
-    )
-
     region = schema.Choice(
             title=_(u"Region"),
             vocabulary=region_list,
-            description = u"Perferably the list of available elements would be built dynamically ",
+            description = u"Perferably the list of available region would be built dynamically ",
             required=False,
     )
 
@@ -57,9 +49,16 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
             title=_(u"Instance Type"),
             vocabulary=instance_type_list,
             required=False,
-            description = u"Perferably the list of available elements would be built dynamically ",
+            description = u"Perferably the list of available instance types would be built dynamically ",
     )
 
+    accessKey = schema.TextLine(
+            title=_(u"AWS Access Key"),
+    )
+
+    secretKey = schema.TextLine(
+            title=_(u"AWS Secret Key"),
+    )
 
     machineImage = schema.TextLine(
             title=_(u"Amazon Machine Image"),
@@ -71,6 +70,7 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
     )
 
 
+
 # Custom content-type class; objects created for this content type will
 # be instances of this class. Use this class to add content-type specific
 # methods and properties. Put methods that are mainly useful for rendering
@@ -80,6 +80,8 @@ class VirtualMachine(Container):
     grok.implements(IVirtualMachine)
 
     # Add your class methods and properties here
+    
+
     def getTitle(self):
         return self.title
 
@@ -99,11 +101,20 @@ class SampleView(grok.View):
 
     grok.context(IVirtualMachine)
     grok.require('zope2.View')
+    grok.name('view')
 
-    # grok.name('view')
 
     # Add view methods here
+    def getJobsOnThisVM(self):
+	"""
+	This method returns a list of jobs associated with this virtual machine.
+	"""
+        context = aq_inner(self.context)
+        catalog = getToolByName(context, 'portal_catalog')
+        all_jobs = catalog.searchResults(portal_type= 'cs492.plonemodeling.job')
+        joblist=[]
+	for brain in all_jobs:
+	    if brain.getObject().virtualMachine.to_object == context:
+  	        joblist.append(brain)
+        return joblist;
 
-@grok.subscribe(IVirtualMachine, IObjectAddedEvent)
-def createVirtualMachine(virtual_machine, event):
-    virtual_machine.monitorString = ''.join(random.choice(string.ascii_lowercase + string.digits) for x in range(5))
