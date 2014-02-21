@@ -9,19 +9,11 @@
 <head>
  <metal:block metal:fill-slot="head_slot">
   <metal:head_slot define-macro="head_slot">
-	    <metal:styleslot define-slot="style_slot" >
 
-		<style media="screen" type="text/css">
-		 .machineTable{background-color:#F0F0F0;width:80%;border:1px solid white}
-		 .machineTable th,td {border:1px solid white;text-align:center;}
-		</style>
-
-	 </metal:styleslot>
-
-	 <!--<metal:styleslot define-slot="style_slot" >
+	 <metal:styleslot define-slot="style_slot" >
 	   <link rel="stylesheet" type="text/css" media="screen"
-		  href="/++resource++cs492.plonemodeling/virtual_machine_templates/virtual_machine_view.css"/>
-	 </metal:styleslot>-->
+		  href="/++resource++cs492.plonemodeling/virtual_machine.css"/>
+	 </metal:styleslot>
 
 
   </metal:head_slot>
