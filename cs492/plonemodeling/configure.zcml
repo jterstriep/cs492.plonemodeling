@@ -24,14 +24,14 @@
   <!-- Register custom view here -->
   <browser:page
     name="get_next_job"
-    for="*"
+    for="Products.CMFCore.interfaces.ISiteRoot"
     permission="zope2.View"
     class=".get_next_job.GetNextJob"
     />
 
   <browser:page
     name="jobs_view"
-    for="*"
+    for="Products.CMFCore.interfaces.ISiteRoot"
     permission="zope2.View"
     class=".jobs_view.JobsView"
 
