@@ -37,8 +37,8 @@
 	</tr>
     </table>
 
-<div tal:condition = "context.status == 'running'">
-    <br><div><b>And if it is running..</b></div><br>
+<div tal:condition = "python:context.status == 'running'">
+    <br><div><b>This machine is running..</b></div><br>
     <table class = "machineTable">
 	<th>IP Address</th><th>Time runed</th><th>Time since last pull</th><th>Action</th>
 	<tr>
