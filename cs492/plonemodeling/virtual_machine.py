@@ -81,6 +81,7 @@ class VirtualMachine(Container):
 
     # Add your class methods and properties here
     
+    status = "running"
 
     def getTitle(self):
         return self.title

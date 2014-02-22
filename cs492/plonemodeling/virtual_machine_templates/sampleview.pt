@@ -37,6 +37,7 @@
 	</tr>
     </table>
 
+<div tal:condition = "context.status == 'running'">
     <br><div><b>And if it is running..</b></div><br>
     <table class = "machineTable">
 	<th>IP Address</th><th>Time runed</th><th>Time since last pull</th><th>Action</th>
@@ -47,6 +48,7 @@
 		<td><button>Terminate</button></td>
 	</tr>
     </table>
+</div>
 
     <br><div><b>And the jobs associated with this vm..</b></div><br>
     
