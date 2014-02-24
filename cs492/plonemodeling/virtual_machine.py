@@ -20,7 +20,9 @@ region_list = SimpleVocabulary(
      SimpleTerm(value=u'us-west-2', title=_(u'us-west-2'))]
     )
 
-instance_type_list = SimpleVocabulary([])
+instance_type_list = SimpleVocabulary(
+    [SimpleTerm(value=u't1.micro', title=_(u't1.micro'))]
+)
 
 
 

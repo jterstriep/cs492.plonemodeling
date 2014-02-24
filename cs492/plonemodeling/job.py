@@ -170,15 +170,17 @@ def createJob(job, event):
     accessKey = virtualMachine.accessKey
     secretKey = virtualMachine.secretKey
     machineImage = virtualMachine.machineImage
+    instanceType = virtualMachine.instance_type
+    region = virtualMachine.region
     ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/Plone/"
     logger = logging.getLogger("Plone")
-    logger.info(ploneLocation)
+    logger.info(region)
     monitor = urllib.urlopen('http://proteinmonster.nfshost.com/static/monitor.txt')
     startScript = monitor.read()
     startScript = startScript.replace("LOCATION", ploneLocation)
     startScript = startScript.replace("IDENTIFIER", virtualMachine.monitorString)
-    conn = boto.ec2.connect_to_region("us-west-2", aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
-    reservation = conn.run_instances(machineImage,instance_type='t1.micro',user_data=startScript)
+    conn = boto.ec2.connect_to_region(region, aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
+    reservation = conn.run_instances(machineImage,instance_type=instanceType,user_data=startScript)
     instance = reservation.instances[0]
     status = instance.update()
     while status == 'pending':
