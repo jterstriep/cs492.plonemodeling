@@ -6,13 +6,10 @@ from plone.dexterity.content import Container
 from plone.directives import form
 from plone.namedfile.interfaces import IImageScaleTraversable
 from Products.CMFCore.utils import getToolByName
-from Acquisition import aq_parent, aq_inner
-from zope.lifecycleevent.interfaces import IObjectAddedEvent
-from z3c.form import button
-import random
-import string
-from zope.interface import Invalid
+from Acquisition import aq_inner
 from cs492.plonemodeling import MessageFactory as _
+import json, logging
+from urlparse import parse_qs
 
 region_list = SimpleVocabulary(
     [SimpleTerm(value=u'us-east-1', title=_(u'us-east-1')),
@@ -109,15 +106,74 @@ class SampleView(grok.View):
 
     # Add view methods here
     def getJobsOnThisVM(self):
-	"""
-	This method returns a list of jobs associated with this virtual machine.
-	"""
+        """
+        This method returns a list of jobs associated with this virtual machine.
+        """
         context = aq_inner(self.context)
         catalog = getToolByName(context, 'portal_catalog')
         all_jobs = catalog.searchResults(portal_type= 'cs492.plonemodeling.job')
         joblist=[]
-	for brain in all_jobs:
-	    if brain.getObject().virtualMachine.to_object == context:
-  	        joblist.append(brain)
+        for brain in all_jobs:
+            if brain.getObject().virtualMachine.to_object == context:
+                joblist.append(brain)
         return joblist;
 
+class getNextJob(grok.View):
+    """ sample view class """
+
+    grok.context(IVirtualMachine)
+    grok.require('zope2.View')
+    grok.name('get_next_job')
+
+    def render(self):
+        """ return next job for virtual machine """
+        # check the monitor identity from the request
+        #   report error if it is incorrect
+        #   terminate instance
+
+        # log the time of the last polling
+
+        # check for running job if found
+        #   return nothing to do
+
+        # check for queued job if found
+        #   return job information
+
+        self.request.response.setHeader('Content-type', 'application/json')
+
+        ## logging for demo
+        logger = logging.getLogger("Plone")
+        logger.info("Job requested")
+
+        method = self.request['REQUEST_METHOD']
+        if method != 'GET':
+            response = self.request.response
+            response.setStatus("404 Not Found")
+            return "Wrong method"
+
+        query_string = self.request['QUERY_STRING']
+        parse_result = parse_qs(query_string)
+        if not 'hash' in parse_result:
+            return "{'response': 'NOTOK', 'reason': 'noHash'}"
+        
+        context = aq_inner(self.context)
+        catalog = getToolByName(context, 'portal_catalog')
+        
+        hashValue = str(parse_result['hash'][0])
+        logger.info('the hash is ' + hashValue)
+
+        vms = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.virtualmachine')
+        for vm in vms:
+            if vm._unrestrictedGetObject().monitorString == hashValue:
+                jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
+                vm_job = 0
+                for job in jobs:
+                    if (getToolByName(job._unrestrictedGetObject(), 'virtualMachine').to_object == vm._unrestrictedGetObject()) and (job._unrestrictedGetObject().job_status == "Running"):
+                        job.getObject().job_status = "Finished"
+                    if (getToolByName(job._unrestrictedGetObject(), 'virtualMachine').to_object == vm._unrestrictedGetObject()) and (job._unrestrictedGetObject().job_status == "Queued") and ((not vm_job) or vm_job.modified.greaterThan(job.modified)):
+                        vm_job = job
+                if vm_job:
+                    vm_job._unrestrictedGetObject().job_status = "Running"
+                    return json.dumps({ 'response': 'OK', 'start_string': vm_job._unrestrictedGetObject().startString  })
+        
+        return json.dumps({'response': 'NOTOK', 'reason': 'invalidHash', 'hash': hashValue })
