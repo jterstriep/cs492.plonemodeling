@@ -15,6 +15,11 @@
 		  href="/++resource++cs492.plonemodeling/virtual_machine.css"/>
 	 </metal:styleslot>
 
+	 <metal:javascriptslot define-slot="javascript_head_slot">
+	   <script type="text/javascript" 
+		  src="/++resource++cs492.plonemodeling/virtual_machine.js"></script>
+	 </metal:javascriptslot>
+
 
   </metal:head_slot>
 </metal:block>
@@ -35,7 +40,8 @@
 		<td><p tal:content="context/monitorString"></p></td>
 		<td><p>unknown</p></td>
 	</tr>
-    </table>
+    </table><br>
+	<input type="button" value="Test Machine" onclick="testMachine();"><div id="testresults"></div>
 
 <div tal:condition = "python:context.status == 'running'">
     <br><div><b>This machine is running..</b></div><br>

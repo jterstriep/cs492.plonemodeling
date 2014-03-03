@@ -11,6 +11,9 @@ from cs492.plonemodeling import MessageFactory as _
 import json, logging
 from urlparse import parse_qs
 
+import boto.ec2
+import time
+
 region_list = SimpleVocabulary(
     [SimpleTerm(value=u'us-east-1', title=_(u'us-east-1')),
      SimpleTerm(value=u'us-west-1', title=_(u'us-west-1')),
@@ -177,3 +180,39 @@ class getNextJob(grok.View):
                     return json.dumps({ 'response': 'OK', 'start_string': vm_job._unrestrictedGetObject().startString  })
         
         return json.dumps({'response': 'NOTOK', 'reason': 'invalidHash', 'hash': hashValue })
+
+class testMachine(grok.View):
+
+    grok.context(IVirtualMachine)
+    grok.require('zope2.View')
+    grok.name('test_machine')
+
+    def render(self):
+
+        self.request.response.setHeader('Content-type', 'application/json');
+
+        context = aq_inner(self.context)
+        accessKey = context.accessKey
+        secretKey = context.secretKey
+        machineImage = context.machineImage
+        instanceType = context.instance_type
+        region = context.region
+        logger = logging.getLogger("Plone")
+        logger.info(region)
+        try:
+            conn = boto.ec2.connect_to_region(region, aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
+            reservation = conn.run_instances(machineImage,instance_type=instanceType)
+        except boto.exception.EC2ResponseError, e:
+            return json.dumps({'response': 'NOTOK', 'reason': e.message});
+        instance = reservation.instances[0]
+        status = instance.update()
+        while status == 'pending':
+            time.sleep(10)
+            status = instance.update()
+        if status != 'running':
+            return json.dumps({'response': 'NOTOK', 'reason': 'Instance Status:' + status})
+        
+        conn.terminate_instances(instance.id);
+
+        return json.dumps({'response': 'OK'})
+
