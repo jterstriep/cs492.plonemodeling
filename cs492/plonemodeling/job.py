@@ -3,7 +3,7 @@ from five import grok
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
-from plone.dexterity.content import Container
+from plone.dexterity.content import Item 
 from plone.namedfile.interfaces import IImageScaleTraversable
 
 from z3c.relationfield.schema import RelationChoice
@@ -83,7 +83,7 @@ class IJob(model.Schema, IImageScaleTraversable):
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
 
-class Job(Container):
+class Job(Item):
     grok.implements(IJob)
 
     # Add your class methods and properties here
