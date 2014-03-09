@@ -16,8 +16,7 @@ from Products.CMFCore.utils import getToolByName
 from plone.supermodel import model
 from cs492.plonemodeling import MessageFactory as _
 
-import socket
-
+import socket, string, random
 
 from cs492.plonemodeling.virtual_machine import IVirtualMachine
 import urllib
@@ -35,6 +34,7 @@ job_status_list = SimpleVocabulary(
      SimpleTerm(value=u'Pending', title=_(u'Pending'))]
     )
 
+AUTH_TOKEN_LENGTH = 10
 # Interface class; used to define content-type schema.
 
 class IJob(model.Schema, IImageScaleTraversable):
@@ -76,6 +76,10 @@ class IJob(model.Schema, IImageScaleTraversable):
             title=_(u"Virtual machine"),
             source=ObjPathSourceBinder(object_provides=IVirtualMachine.__identifier__),
             required=True,
+        )
+    monitorAuthToken = schema.TextLine(
+            title=_(u"Monitor authorization token"),
+            required=False
         )
 
 # Custom content-type class; objects created for this content type will
@@ -157,15 +161,24 @@ class SampleView(grok.View):
 
 @grok.subscribe(IJob, IObjectAddedEvent)
 def createJob(job, event):
+    logger = logging.getLogger("Plone")
+
+    ## create authorization token
+    job.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase \
+        + string.digits) for _ in range(AUTH_TOKEN_LENGTH))
+
+    ## Do not queue the job if status is not Queued
     if job.job_status != "Queued":
         job.job_status = "Pending"
         return
+
     virtualMachine = getToolByName(job, 'virtualMachine').to_object
     context = aq_inner(job)
     catalog = getToolByName(context, 'portal_catalog')
     jobs = catalog.searchResults(portal_type='cs492.plonemodeling.job')
     for job_query in jobs:
-            if getToolByName(job_query.getObject(), 'virtualMachine').to_object == virtualMachine and job_query.getObject().job_status == "Running":
+            if getToolByName(job_query.getObject(), 'virtualMachine').to_object == virtualMachine \
+                    and job_query.getObject().job_status == "Running":
                 return
     accessKey = virtualMachine.accessKey
     secretKey = virtualMachine.secretKey
@@ -173,7 +186,7 @@ def createJob(job, event):
     instanceType = virtualMachine.instance_type
     region = virtualMachine.region
     ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/Plone/"
-    logger = logging.getLogger("Plone")
+
     logger.info(region)
     monitor = urllib.urlopen('http://proteinmonster.nfshost.com/static/monitor.txt')
     startScript = monitor.read()
