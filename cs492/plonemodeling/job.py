@@ -27,6 +27,8 @@ import logging
 
 ## imports to redefine Add and View forms
 from plone.directives import dexterity
+from plone.dexterity.browser.add import DefaultAddForm, DefaultAddView
+
 
 job_status_list = SimpleVocabulary(
     [SimpleTerm(value=u'Queued', title=_(u'Queued')),
@@ -220,7 +222,6 @@ class EditForm(dexterity.EditForm):
         super(EditForm, self).updateWidgets()
         self.widgets['monitorAuthToken'].mode = 'hidden'
 
-from plone.dexterity.browser.add import DefaultAddForm, DefaultAddView
 
 class AddForm(DefaultAddForm):
     """ Custom add form which hides authToken
