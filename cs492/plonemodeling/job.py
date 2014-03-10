@@ -213,8 +213,6 @@ class EditForm(dexterity.EditForm):
         monitorAuthToken should not be edited from EditForm
         Hence, we hide it here, though user can still
         change it programmatically
-        Need to come up with the same thing for AddForm
-
     """
     grok.context(IJob)
 
@@ -222,3 +220,18 @@ class EditForm(dexterity.EditForm):
         super(EditForm, self).updateWidgets()
         self.widgets['monitorAuthToken'].mode = 'hidden'
 
+from plone.dexterity.browser.add import DefaultAddForm, DefaultAddView
+
+class AddForm(DefaultAddForm):
+    """ Custom add form which hides authToken
+        Then token is generated randomly and should not be
+        edited by user
+    """
+    def updateWidgets(self):
+        """ """
+        # Some custom code here
+        super(AddForm, self).updateWidgets()
+        self.widgets['monitorAuthToken'].mode = 'hidden' 
+
+class AddView(DefaultAddView):
+    form = AddForm
