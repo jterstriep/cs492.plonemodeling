@@ -25,6 +25,9 @@ import time
 
 import logging
 
+## imports to redefine Add and View forms
+from plone.directives import dexterity
+
 job_status_list = SimpleVocabulary(
     [SimpleTerm(value=u'Queued', title=_(u'Queued')),
      SimpleTerm(value=u'Started', title=_(u'Started')),
@@ -201,3 +204,21 @@ def createJob(job, event):
         status = instance.update()
     if status == 'running':
         job.instance = instance.public_dns_name
+
+
+
+class EditForm(dexterity.EditForm):
+    """ Custom edit form which hides authToken
+
+        monitorAuthToken should not be edited from EditForm
+        Hence, we hide it here, though user can still
+        change it programmatically
+        Need to come up with the same thing for AddForm
+
+    """
+    grok.context(IJob)
+
+    def updateWidgets(self):
+        super(EditForm, self).updateWidgets()
+        self.widgets['monitorAuthToken'].mode = 'hidden'
+
