@@ -37,7 +37,7 @@
 		<td><p tal:content="context/region"></p></td>
 		<td><p tal:content="context/instance_type"></p></td>
 		<td><p tal:content="context/machineImage"></p></td>
-		<td><p tal:content="context/monitorString"></p></td>
+		<td><p tal:content="context/monitorAuthToken"></p></td>
 		<td><p>unknown</p></td>
 	</tr>
     </table><br>
