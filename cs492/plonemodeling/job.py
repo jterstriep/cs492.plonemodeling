@@ -25,11 +25,6 @@ import time
 
 import logging
 
-## imports to redefine Add and View forms
-from plone.directives import dexterity
-from plone.dexterity.browser.add import DefaultAddForm, DefaultAddView
-
-
 job_status_list = SimpleVocabulary(
     [SimpleTerm(value=u'Queued', title=_(u'Queued')),
      SimpleTerm(value=u'Started', title=_(u'Started')),
@@ -81,10 +76,6 @@ class IJob(model.Schema, IImageScaleTraversable):
             title=_(u"Virtual machine"),
             source=ObjPathSourceBinder(object_provides=IVirtualMachine.__identifier__),
             required=True,
-        )
-    monitorAuthToken = schema.TextLine(
-            title=_(u"Monitor authorization token"),
-            required=False
         )
 
 # Custom content-type class; objects created for this content type will
@@ -206,33 +197,3 @@ def createJob(job, event):
         status = instance.update()
     if status == 'running':
         job.instance = instance.public_dns_name
-
-
-
-class EditForm(dexterity.EditForm):
-    """ Custom edit form which hides authToken
-
-        monitorAuthToken should not be edited from EditForm
-        Hence, we hide it here, though user can still
-        change it programmatically
-    """
-    grok.context(IJob)
-
-    def updateWidgets(self):
-        super(EditForm, self).updateWidgets()
-        self.widgets['monitorAuthToken'].mode = 'hidden'
-
-
-class AddForm(DefaultAddForm):
-    """ Custom add form which hides authToken
-        Then token is generated randomly and should not be
-        edited by user
-    """
-    def updateWidgets(self):
-        """ """
-        # Some custom code here
-        super(AddForm, self).updateWidgets()
-        self.widgets['monitorAuthToken'].mode = 'hidden' 
-
-class AddView(DefaultAddView):
-    form = AddForm

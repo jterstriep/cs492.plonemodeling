@@ -14,6 +14,12 @@ from urlparse import parse_qs
 import boto.ec2
 import time
 
+
+## imports to redefine Add and View forms
+from plone.directives import dexterity
+from plone.dexterity.browser.add import DefaultAddForm, DefaultAddView
+
+
 region_list = SimpleVocabulary(
     [SimpleTerm(value=u'us-east-1', title=_(u'us-east-1')),
      SimpleTerm(value=u'us-west-1', title=_(u'us-west-1')),
@@ -66,8 +72,8 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
             title=_(u"Amazon Machine Image"),
     )
 
-    monitorString = schema.TextLine(
-            title=_(u"Monitor Identifier"),
+    monitorAuthToken = schema.TextLine(
+            title=_(u"Monitor authorization token"),
             required=False
     )
     current_job_url = schema.TextLine(
@@ -310,3 +316,30 @@ class testMachine(grok.View):
 
         return json.dumps({'response': 'OK'})
 
+class EditForm(dexterity.EditForm):
+    """ Custom edit form which hides authToken
+
+        monitorAuthToken should not be edited from EditForm
+        Hence, we hide it here, though user can still
+        change it programmatically
+    """
+    grok.context(IVirtualMachine)
+
+    def updateWidgets(self):
+        super(EditForm, self).updateWidgets()
+        self.widgets['monitorAuthToken'].mode = 'hidden'
+
+
+class AddForm(DefaultAddForm):
+    """ Custom add form which hides authToken
+        Then token is generated randomly and should not be
+        edited by user
+    """
+    def updateWidgets(self):
+        """ """
+        # Some custom code here
+        super(AddForm, self).updateWidgets()
+        self.widgets['monitorAuthToken'].mode = 'hidden' 
+
+class AddView(DefaultAddView):
+    form = AddForm
