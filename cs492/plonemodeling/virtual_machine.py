@@ -76,10 +76,6 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
             title=_(u"Monitor authorization token"),
             required=False
     )
-    current_job_url = schema.TextLine(
-            title=_(u'URL of currently running job'),
-            required=False
-        )
 
 
 
@@ -97,6 +93,9 @@ class VirtualMachine(Container):
 
     def getTitle(self):
         return self.title
+
+    def start_machine(self):
+        return False
 
 
 # View class
