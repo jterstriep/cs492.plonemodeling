@@ -71,11 +71,6 @@ class IJob(model.Schema, IImageScaleTraversable):
             vocabulary=job_status_list,
             required=False,
     )
-
-    instance = schema.TextLine(
-            title=_(u"Instance location"),
-            required=False,
-        )
         
     virtualMachine = RelationChoice(
             title=_(u"Virtual machine"),
