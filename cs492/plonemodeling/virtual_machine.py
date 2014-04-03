@@ -303,6 +303,8 @@ class testMachine(grok.View):
             reservation = conn.run_instances(machineImage,instance_type=instanceType)
         except boto.exception.EC2ResponseError, e:
             return json.dumps({'response': 'NOTOK', 'message': e.message});
+        except Exception, e:
+            return json.dumps({'response': 'NOTOK', 'message': e.message});
         instance = reservation.instances[0]
         status = instance.update()
         while status == 'pending':
