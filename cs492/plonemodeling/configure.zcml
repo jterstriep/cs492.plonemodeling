@@ -31,13 +31,13 @@
     />
   
 
-  <adapter
+    <adapter
     for="Products.CMFCore.interfaces.IFolderish
          Products.CMFDefault.interfaces.ICMFDefaultSkin
         plone.dexterity.interfaces.IDexterityFTI"
     provides="zope.publisher.interfaces.browser.IBrowserPage"
-    factory=".job.AddView"
-    name="cs492.plonemodeling.job"
+    factory=".virtual_machine.AddView"
+    name="cs492.plonemodeling.virtualmachine"
     />
 
   <i18n:registerTranslations directory="locales" />
