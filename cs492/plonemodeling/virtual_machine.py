@@ -58,7 +58,7 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
             title=_(u"AWS Access Key"),
     )
 
-    secretKey = schema.TextLine(
+    secretKey = schema.Password(
             title=_(u"AWS Secret Key"),
     )
 

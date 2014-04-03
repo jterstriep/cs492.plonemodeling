@@ -84,7 +84,6 @@ class Job(Item):
 
     # Add your class methods and properties here
     indexList = []
-    virtualMachineTitle = 'aaa'
  
     def __init__(self):
         self.indexList = []

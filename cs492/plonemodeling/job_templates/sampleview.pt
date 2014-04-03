@@ -24,8 +24,8 @@
 <metal:main fill-slot="content-core">
   <metal:content-core define-macro="content-core">
     <br>
-   	<table class = "jobTable">
-	<tr>
+        <table class = "jobTable">
+        <tr>
 		<td>Assigned to: </td>
 		<td><div tal:content="context/getVMTitle"></div></td>
 	</tr>
