@@ -22,6 +22,7 @@ from cs492.plonemodeling.virtual_machine import IVirtualMachine
 import urllib
 import boto.ec2
 import time
+from datetime import datetime
 
 import logging
 
@@ -56,16 +57,7 @@ class IJob(model.Schema, IImageScaleTraversable):
     startString = schema.TextLine(
             title=_(u"command used to start the model")
     )
-    start = schema.Datetime(
-            title=_(u"Start time"),
-            required=False,
-    )
-
-    end = schema.Datetime(
-            title=_(u"End time"),
-            required=False,
-    )
-
+    
     job_status = schema.Choice(
             title=_(u"Job Status"),
             vocabulary=job_status_list,
@@ -155,13 +147,17 @@ class SampleView(grok.View):
     grok.context(IJob)
     grok.require('zope2.View')
 
-    # grok.name('view')
+    grok.name('view')
 
     # Add view methods here
 
 @grok.subscribe(IJob, IObjectAddedEvent)
 def createJob(job, event):
     logger = logging.getLogger("Plone")
+
+    ## assign time upon job creation.
+    job.start = str(datetime.now())
+    
 
     ## create authorization token
     job.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase \

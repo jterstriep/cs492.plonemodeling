@@ -30,7 +30,6 @@
 <metal:main fill-slot="content-core">
   <metal:content-core define-macro="content-core">
     <br>
-	<div class = "try">aaa</div>
     <table class = "machineTable">
 	<th>Region</th><th>Instance Type</th><th>AMI</th><th>Monitor Identifier</th><th>Status</th>
 	<tr>
