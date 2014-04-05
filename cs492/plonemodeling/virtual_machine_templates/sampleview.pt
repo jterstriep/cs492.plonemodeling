@@ -37,7 +37,7 @@
 		<td><p tal:content="context/instance_type"></p></td>
 		<td><p tal:content="context/machineImage"></p></td>
 		<td><p tal:content="context/monitorAuthToken"></p></td>
-		<td><p>unknown</p></td>
+		<td><div id=vm_status tal:content = "context/vm_status"></div></td>
 	</tr>
     </table><br>
 	<input type="button" value="Test Machine" onclick="testMachine();"><div id="testresults"></div>
@@ -76,10 +76,6 @@
 	</tr>
 
      </table>
-
-
-  
-
   </metal:content-core>
 </metal:main>
 

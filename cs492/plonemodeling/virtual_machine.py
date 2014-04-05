@@ -13,6 +13,8 @@ import logging
 from urlparse import parse_qs
 
 import socket
+
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
 import boto.ec2
 import time
 
@@ -355,6 +357,7 @@ class testMachine(grok.View):
         logger = logging.getLogger("Plone")
         logger.info(region)
         try:
+            context.vm_status = "Invalid"
             conn = boto.ec2.connect_to_region(region, aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
             reservation = conn.run_instances(machineImage, instance_type=instanceType)
         except boto.exception.EC2ResponseError, e:
@@ -369,6 +372,7 @@ class testMachine(grok.View):
         if status != 'running':
             return json.dumps({'response': 'NOTOK', 'message': 'Instance Status:' + status})
 
+        context.vm_status = "Valid"
         conn.terminate_instances(instance.id)
 
         return json.dumps({'response': 'OK'})
@@ -402,3 +406,10 @@ class AddForm(DefaultAddForm):
 
 class AddView(DefaultAddView):
     form = AddForm
+
+
+# Called when a virtual machine is first created.
+@grok.subscribe(IVirtualMachine, IObjectAddedEvent)
+def createVM(vm, event):
+
+    vm.vm_status = "unevaluated"
