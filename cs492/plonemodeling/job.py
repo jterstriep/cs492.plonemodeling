@@ -83,13 +83,14 @@ class IJob(model.Schema, IImageScaleTraversable):
             title=_(u"Job Status"),
             vocabulary=job_status_list,
             required=False,
+            default=job_status_list.getTerm(u'Pending').value
     )
         
     virtualMachine = RelationChoice(
             title=_(u"Virtual machine"),
             source=ObjPathSourceBinder(object_provides=IVirtualMachine.__identifier__),
             required=True,
-        )
+    )
 
 # Custom content-type class; objects created for this content type will
 # be instances of this class. Use this class to add content-type specific
