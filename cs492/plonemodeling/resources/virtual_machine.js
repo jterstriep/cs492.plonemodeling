@@ -1,11 +1,11 @@
 function testMachine() {
 	$("#testresults").html("Waiting...");
 	$.getJSON("test_machine", function(json) {
-		if (json.respone == "OK") {
+		if (json.response == "OK") {
 			message = "Success";
 		}
 		else {
-			message = json.reason;
+			message = json.message;
 		}
 		$("#testresults").html(message);
 	})	
