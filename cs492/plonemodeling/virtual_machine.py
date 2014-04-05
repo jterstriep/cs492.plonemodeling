@@ -292,7 +292,9 @@ class getNextJob(grok.View):
                 next_job = find_next_job(current_vm, catalog)
                 if next_job:
                     current_vm.current_job = next_job.absolute_url_path()
-                    next_job.status = 'Started'
+                    next_job.job_status = 'Running'
+                    next_job.start()
+                    
                     return json.dumps({
                         'response': 'success',
                         'start_string': next_job.startString,
@@ -348,6 +350,7 @@ class updateJobStatus(grok.View):
             job_obj = catalog.unrestrictedTraverse(job_path)
             if job_obj.monitorAuthToken == parse_result['hash'][0]:
                 job_obj.job_status = new_status
+                job_obj.end()
                 # remove the object from the machine
                 current_vm.current_job_url = None
                 return '{"response": "sucess", "message": "status updated"}'

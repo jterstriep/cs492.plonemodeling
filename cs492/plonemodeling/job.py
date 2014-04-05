@@ -111,10 +111,28 @@ class Job(Item):
     def getStartTime(self):
         if self.start is None:
             return "--"
-        return self.start
+        return str(self.start)
 
     def getEndTime(self):
-        return self.end
+        if self.end is None:
+            return "--"
+        return str(self.end)
+
+    def start(self):
+        self.start = datetime.now()
+
+    def end(self):
+        self.end = datetime.now()
+
+    def getCreationTime(self):
+        if self.creation is None:
+            return "--"
+        return str(self.creation)
+
+    def getDuration(self):
+        if self.start is None or self.end is None:
+            return "--"
+        return str(self.end - self.start)
 
     def getVMTitle(self):
         return self.virtualMachine.to_object.getTitle()
@@ -147,7 +165,9 @@ def createJob(job, event):
     logger = logging.getLogger("Plone")
 
     ## assign time upon job creation.
-    job.start = str(datetime.now())
+    job.creation = str(datetime.now())
+    job.start = None
+    job.end = None
 
     ## create authorization token
     job.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase \
