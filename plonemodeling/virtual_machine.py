@@ -10,7 +10,7 @@ from Acquisition import aq_inner
 from cs492.plonemodeling import MessageFactory as _
 import json, logging
 from urlparse import parse_qs
-from zope.lifecycleevent.interfaces import IObjectAddedEvent
+
 import boto.ec2
 import time
 
@@ -114,6 +114,7 @@ class SampleView(grok.View):
     grok.context(IVirtualMachine)
     grok.require('zope2.View')
     grok.name('view')
+
 
     # Add view methods here
     def getJobsOnThisVM(self):
@@ -298,12 +299,9 @@ class testMachine(grok.View):
         logger = logging.getLogger("Plone")
         logger.info(region)
         try:
-            context.vm_status = "Invalid";
             conn = boto.ec2.connect_to_region(region, aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
             reservation = conn.run_instances(machineImage,instance_type=instanceType)
         except boto.exception.EC2ResponseError, e:
-            return json.dumps({'response': 'NOTOK', 'message': e.message});
-        except Exception, e:
             return json.dumps({'response': 'NOTOK', 'message': e.message});
         instance = reservation.instances[0]
         status = instance.update()
@@ -312,7 +310,7 @@ class testMachine(grok.View):
             status = instance.update()
         if status != 'running':
             return json.dumps({'response': 'NOTOK', 'message': 'Instance Status:' + status})
-        context.vm_status = "valid"
+        
         conn.terminate_instances(instance.id);
 
         return json.dumps({'response': 'OK'})
@@ -344,11 +342,3 @@ class AddForm(DefaultAddForm):
 
 class AddView(DefaultAddView):
     form = AddForm
-
-
-# Called when a virtual machine is first created.
-@grok.subscribe(IVirtualMachine, IObjectAddedEvent)
-def createVM(vm, event):
-    
-    vm.vm_status = "unevaluated"
-    
