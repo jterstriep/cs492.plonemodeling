@@ -28,7 +28,7 @@ import logging
 
 job_status_list = SimpleVocabulary(
     [SimpleTerm(value=u'Queued', title=_(u'Queued')),
-     SimpleTerm(value=u'Started', title=_(u'Started')),
+     SimpleTerm(value=u'Failed', title=_(u'Failed')),
      SimpleTerm(value=u'Finished', title=_(u'Finished')),
      SimpleTerm(value=u'Running', title=_(u'Running')),
      SimpleTerm(value=u'Terminated', title=_(u'Terminated')),
