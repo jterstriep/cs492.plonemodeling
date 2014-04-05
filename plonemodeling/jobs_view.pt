@@ -1,0 +1,57 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      metal:use-macro="context/main_template/macros/master">
+
+
+<head>
+ <metal:block metal:fill-slot="head_slot">
+  <metal:head_slot define-macro="head_slot">
+	   
+	 <metal:styleslot define-slot="style_slot" >
+	   <link rel="stylesheet" type="text/css" media="screen"
+		  href="/++resource++cs492.plonemodeling/jobs_view.css"/>
+	 </metal:styleslot>
+
+
+  </metal:head_slot>
+</metal:block>
+
+</head>
+	 
+    <metal:block fill-slot="content-core">
+     
+     <div class = "container-wrapper">
+     <div class = "container">
+            <h1> Job Queue Browser View</h1>
+     </div>
+	<div class = "sortBox">Sort by: 
+		<select>
+			  <option value="start_time">Start time</option>
+			  <option value="job_status">Job Status</option>		 
+		</select>
+	 <br><br></div>
+   	<div>  
+  	 <table class = "jobTable">
+	<th>Index</th><th>Job</th><th>Creater</th><th>VM</th> <th> dns </th><th>Start time</th><th>Status</th><th>Action</th>
+	<tr tal:repeat="job view/all_jobs" height = "40px">
+		<td tal:content = "python:job.getObject().getJobIndex()" >--</td>
+		<td> <a href = "" tal:attributes = "href python:job.getURL()" tal:content = "python:job['Title']" target= "_BLANK"> Job</a></td>
+                <td tal:content = "python:job['Creator']">Creater</td>
+		<td tal:content = "python:job.getObject().getVMTitle()">Vm</td>
+		<td><a> - </a> </td>
+		<td><a tal:content = "python:job.getObject().start">Start time</a></td>
+		<td tal:content = "python:job.getObject().getStatus()">Status</td>
+		<td >
+			<select>
+			  <option value="none">Select..</option>		 
+			</select> 
+		</td>
+
+		</tr>
+	 </table>
+	</div>
+     </div>
+
+    </metal:block>
+</html>

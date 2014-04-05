@@ -1,0 +1,9 @@
+.machineTable{
+	background-color:#F0F0F0;
+	width:80%;border:1px solid white
+}
+
+.machineTable th,td {
+	border:1px solid white;
+	text-align:center;
+}

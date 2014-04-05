@@ -37,7 +37,7 @@
 		<td><p tal:content="context/instance_type"></p></td>
 		<td><p tal:content="context/machineImage"></p></td>
 		<td><p tal:content="context/monitorAuthToken"></p></td>
-		<td><div id=vm_status tal:content = "context/vm_status"></div></td>
+		<td><p>unknown</p></td>
 	</tr>
     </table><br>
 	<input type="button" value="Test Machine" onclick="testMachine();"><div id="testresults"></div>
@@ -64,7 +64,7 @@
                 <td tal:content = "python:job['Creator']">Creater</td>
 		<td tal:content = "context/title">Vm</td>
 		<td><a> - </a> </td>
-		<td><a tal:content = "python:job.getObject().getStartTime()">Start time</a></td>
+		<td><a tal:content = "python:job.getObject().getStartTime()">Creation time</a></td>
 		<td tal:content = "python:job.getObject().getStatus()">Status</td>
 
 		<td >
@@ -76,6 +76,10 @@
 	</tr>
 
      </table>
+
+
+  
+
   </metal:content-core>
 </metal:main>
 
