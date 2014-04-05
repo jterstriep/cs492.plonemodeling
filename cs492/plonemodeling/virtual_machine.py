@@ -13,6 +13,8 @@ import logging
 from urlparse import parse_qs
 
 import socket
+import string
+import random
 
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 import boto.ec2
@@ -121,10 +123,19 @@ class VirtualMachine(Container):
         return self.monitorAuthToken
 
     def get_status(self):
-        return self.status
+        return self.vm_status
 
     def getTitle(self):
         return self.title
+
+    def get_monitor_key(self):
+        AUTH_TOKEN_LENGTH = 10
+        if self.monitorAuthToken:
+            return self.monitorAuthToken
+        else:
+            self.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase
+                                            + string.digits) for _ in range(AUTH_TOKEN_LENGTH))
+            return self.monitorAuthToken
 
     def start_machine(self, job_context, job):
         logger = logging.getLogger('Plone')
@@ -135,14 +146,24 @@ class VirtualMachine(Container):
         ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/"
         vm_context = aq_inner(self)
         vm_path = ploneLocation + vm_context.absolute_url_path()
-        logger.info('vm path is', vm_path)
+        logger.info('vm path is' + str(vm_path))
 
-        user_data_script = USER_DATA + 'monitor_setup ' + vm_path + ' ' + self.get_monitor_key()
+        try:
+            user_data_script = USER_DATA + 'monitor_setup ' + vm_path + ' ' + self.get_monitor_key()
 
-        conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
-                                          aws_secret_access_key=self.secretKey)
+            logger.info('Credentials are ' + self.accessKey + self.secretKey)
+            conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
+                                              aws_secret_access_key=self.secretKey)
+            logger.info('Got a connection object')
+            logger.info('Machine image is ' + self.machineImage)
+            logger.info('Instance type is ' + self.instance_type)
+            logger.info('user script is ' + user_data_script)
 
-        reservation = conn.run_instances(self.machineImage, instance_type=self.instance_type, user_data=user_data_script)
+            reservation = conn.run_instances(self.machineImage, instance_type=self.instance_type, user_data=user_data_script)
+            logger.info('Got a reservation object')
+        except Exception, e:
+            logger.info('Got exception ' + e.message)
+        logger.info('Done with connection')
         instance = reservation.instances[0]
 
         instance_status = ''

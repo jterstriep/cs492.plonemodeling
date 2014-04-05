@@ -42,7 +42,7 @@
     </table><br>
 	<input type="button" value="Test Machine" onclick="testMachine();"><div id="testresults"></div>
 
-<div tal:condition = "python:context.status == 'running'">
+<div tal:condition = "python:context.vm_status == 'running'">
     <br><div><b>This machine is running..</b></div><br>
     <table class = "machineTable">
 	<th>IP Address</th><th>Time runed</th><th>Time since last pull</th><th>Action</th>
