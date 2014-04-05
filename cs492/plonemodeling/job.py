@@ -174,7 +174,6 @@ def createJob(job, event):
 
     ## assign time upon job creation.
     job.start = str(datetime.now())
-    
 
     ## create authorization token
     job.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase \
@@ -188,6 +187,11 @@ def createJob(job, event):
     virtualMachine = getToolByName(job, 'virtualMachine').to_object
     context = aq_inner(job)
     catalog = getToolByName(context, 'portal_catalog')
+    result = virtualMachine.start_machine(context, job)
+    logger.info(result)
+
+    return
+    """
     jobs = catalog.searchResults(portal_type='cs492.plonemodeling.job')
     for job_query in jobs:
             # do not do anything if a job is running on the vm
@@ -218,3 +222,4 @@ def createJob(job, event):
         status = instance.update()
     if status == 'running':
         job.instance = instance.public_dns_name
+"""

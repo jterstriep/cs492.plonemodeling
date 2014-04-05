@@ -8,9 +8,11 @@ from plone.namedfile.interfaces import IImageScaleTraversable
 from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_inner
 from cs492.plonemodeling import MessageFactory as _
-import json, logging
+import json
+import logging
 from urlparse import parse_qs
 
+import socket
 import boto.ec2
 import time
 
@@ -19,6 +21,31 @@ import time
 from plone.directives import dexterity
 from plone.dexterity.browser.add import DefaultAddForm, DefaultAddView
 
+USER_DATA = """
+    #!/bin/bash
+
+    MONITOR_LOCATION="https://raw.github.com/falkrust/PloneMonitor/master/monitor.py"
+    MONITOR_FNAME="monitor.py"
+
+    function monitor_setup {
+        # $1 is plone location
+        # $2 is authToken
+        cd ~
+        echo changed directory to $PWD
+        echo "downloading monitor script"
+        wget $MONITOR_LOCATION
+
+        if [ -f $MONITOR_FNAME ]; then
+        echo "file downloaded successfully"
+        echo "setting exec permissions"
+        chmod +x $MONITOR_FNAME
+
+        echo "Calling the monitor script now"
+        python2 $MONITOR_FNAME $1 $2
+        fi
+    }
+
+"""
 
 region_list = SimpleVocabulary(
     [SimpleTerm(value=u'us-east-1', title=_(u'us-east-1')),
@@ -31,9 +58,7 @@ instance_type_list = SimpleVocabulary(
 )
 
 
-
-# Interface class; used to define content-type schema.
-
+# Interface class used to define content-type schema.
 class IVirtualMachine(form.Schema, IImageScaleTraversable):
     """
     Specification of an EC2 instance
@@ -47,55 +72,89 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
     #form.model("models/virtual_machine.xml")
 
     region = schema.Choice(
-            title=_(u"Region"),
-            vocabulary=region_list,
-            description = u"Perferably the list of available region would be built dynamically ",
-            required=False,
+        title=_(u"Region"),
+        vocabulary=region_list,
+        description=u"Perferably the list of available region would be built dynamically ",
+        required=False,
     )
 
     instance_type = schema.Choice(
-            title=_(u"Instance Type"),
-            vocabulary=instance_type_list,
-            required=False,
-            description = u"Perferably the list of available instance types would be built dynamically ",
+        title=_(u"Instance Type"),
+        vocabulary=instance_type_list,
+        required=False,
+        description=u"Perferably the list of available instance types would be built dynamically ",
     )
 
     accessKey = schema.TextLine(
-            title=_(u"AWS Access Key"),
+        title=_(u"AWS Access Key"),
     )
 
     secretKey = schema.Password(
-            title=_(u"AWS Secret Key"),
+        title=_(u"AWS Secret Key"),
     )
 
     machineImage = schema.TextLine(
-            title=_(u"Amazon Machine Image"),
+        title=_(u"Amazon Machine Image"),
     )
 
     monitorAuthToken = schema.TextLine(
-            title=_(u"Monitor authorization token"),
-            required=False
+        title=_(u"Monitor authorization token"),
+        required=False
     )
-
 
 
 # Custom content-type class; objects created for this content type will
 # be instances of this class. Use this class to add content-type specific
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
-
 class VirtualMachine(Container):
     grok.implements(IVirtualMachine)
 
     # Add your class methods and properties here
-    
-    status = "stop"
+    vm_status = 'stopped'
+
+    running_vm_id = ''
+
+    def get_next_key(self):
+        return self.monitorAuthToken
+
+    def get_status(self):
+        return self.status
 
     def getTitle(self):
         return self.title
 
-    def start_machine(self):
-        return False
+    def start_machine(self, job_context, job):
+        logger = logging.getLogger('Plone')
+        logger.info('start_machine method called')
+        if self.running_vm_id:
+            return False
+
+        ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/"
+        vm_context = aq_inner(self)
+        vm_path = ploneLocation + vm_context.absolute_url_path()
+        logger.info('vm path is', vm_path)
+
+        user_data_script = USER_DATA + 'monitor_setup ' + vm_path + ' ' + self.get_monitor_key()
+
+        conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
+                                          aws_secret_access_key=self.secretKey)
+
+        reservation = conn.run_instances(self.machineImage, instance_type=self.instance_type, user_data=user_data_script)
+        instance = reservation.instances[0]
+
+        instance_status = ''
+        while True:
+            instance_status = instance.update()
+            if instance_status != 'pending':
+                break
+            time.sleep(10)
+        logger.info('status of the instance is', instance_status)
+        if instance_status == 'running':
+            job.instance = instance.public_dns_name
+            self.running_vm_id = instance.id
+
+        return True
 
 
 # View class
@@ -115,7 +174,6 @@ class SampleView(grok.View):
     grok.require('zope2.View')
     grok.name('view')
 
-
     # Add view methods here
     def getJobsOnThisVM(self):
         """
@@ -123,12 +181,14 @@ class SampleView(grok.View):
         """
         context = aq_inner(self.context)
         catalog = getToolByName(context, 'portal_catalog')
-        all_jobs = catalog.searchResults(portal_type= 'cs492.plonemodeling.job')
-        joblist=[]
+        all_jobs = catalog.searchResults(portal_type='cs492.plonemodeling.job')
+
+        joblist = []
         for brain in all_jobs:
             if brain.getObject().virtualMachine.to_object == context:
                 joblist.append(brain)
-        return joblist;
+        return joblist
+
 
 def is_authorized_monitor(vm, hashkey, catalog):
     """ Helper method to check if monitorAuthToken is valid """
@@ -138,9 +198,10 @@ def is_authorized_monitor(vm, hashkey, catalog):
         job_obj = job._unrestrictedGetObject()
         # if the request if from authorized monitor script
         if job_obj.monitorAuthToken == hashkey and \
-            getToolByName(job_obj, 'virtualmachine').to_object == vm:
+                getToolByName(job_obj, 'virtualmachine').to_object == vm:
             return True
     return False
+
 
 def find_next_job(vm, catalog):
     """ helper method to find the first job to be run on current vm """
@@ -150,12 +211,12 @@ def find_next_job(vm, catalog):
     for job in jobs:
         job_obj = job._unrestrictedGetObject()
 
-        
         if getToolByName(job_obj, 'virtualmachine').to_object == vm and \
             job_obj.job_status == 'Queued' and \
-            (not next_job or next_job.modified.greaterThan(job_obj.modified)):
+                (not next_job or next_job.modified.greaterThan(job_obj.modified)):
             next_job = job_obj
     return next_job
+
 
 class getNextJob(grok.View):
     """ get next job to be run on virtual machine """
@@ -163,8 +224,6 @@ class getNextJob(grok.View):
     grok.context(IVirtualMachine)
     grok.require('zope2.View')
     grok.name('get_next_job')
-
-
 
     def render(self):
         """ return next job for virtual machine """
@@ -182,7 +241,6 @@ class getNextJob(grok.View):
 
         self.request.response.setHeader('Content-type', 'application/json')
 
-
         ## logging for demo
         logger = logging.getLogger('Plone')
         logger.info('Job requested')
@@ -191,7 +249,7 @@ class getNextJob(grok.View):
         parse_result = parse_qs(query_string)
         if not 'hash' in parse_result:
             return '{"response": "NOTOK", "message": "noHash"}'
-        
+
         logger.info('the hash is ' + parse_result['hash'][0])
         context = aq_inner(self.context)
 
@@ -204,7 +262,7 @@ class getNextJob(grok.View):
 
         if job_path:
             # if has running job, return error since cannot have two running jobs
-            return json.dumps({'response': 'fail', 'message': 'another job running'})  
+            return json.dumps({'response': 'fail', 'message': 'another job running'})
         else:
             # if the request is from authorized monitor script
             if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
@@ -236,7 +294,6 @@ class updateJobStatus(grok.View):
 
         self.request.response.setHeader('Content-type', 'application/json')
 
-
         ## logging for demo
         logger = logging.getLogger('Plone')
         logger.info('Job status update requested')
@@ -254,7 +311,7 @@ class updateJobStatus(grok.View):
             # failed stands for script which returned an error when running
             if new_status not in ['Finished', 'Failed']:
                 return '{"response": "fail", "message": "Invalid new status"}'
-        
+
         context = aq_inner(self.context)
         catalog = getToolByName(context, 'portal_catalog')
 
@@ -279,7 +336,6 @@ class updateJobStatus(grok.View):
             return '{"response": "fail", "message": "job is not found"}'
 
 
-
 class testMachine(grok.View):
 
     grok.context(IVirtualMachine)
@@ -288,7 +344,7 @@ class testMachine(grok.View):
 
     def render(self):
 
-        self.request.response.setHeader('Content-type', 'application/json');
+        self.request.response.setHeader('Content-type', 'application/json')
 
         context = aq_inner(self.context)
         accessKey = context.accessKey
@@ -300,11 +356,11 @@ class testMachine(grok.View):
         logger.info(region)
         try:
             conn = boto.ec2.connect_to_region(region, aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
-            reservation = conn.run_instances(machineImage,instance_type=instanceType)
+            reservation = conn.run_instances(machineImage, instance_type=instanceType)
         except boto.exception.EC2ResponseError, e:
-            return json.dumps({'response': 'NOTOK', 'message': e.message});
+            return json.dumps({'response': 'NOTOK', 'message': e.message})
         except Exception, e:
-            return json.dumps({'response': 'NOTOK', 'message': e.message});
+            return json.dumps({'response': 'NOTOK', 'message': e.message})
         instance = reservation.instances[0]
         status = instance.update()
         while status == 'pending':
@@ -312,10 +368,11 @@ class testMachine(grok.View):
             status = instance.update()
         if status != 'running':
             return json.dumps({'response': 'NOTOK', 'message': 'Instance Status:' + status})
-        
-        conn.terminate_instances(instance.id);
+
+        conn.terminate_instances(instance.id)
 
         return json.dumps({'response': 'OK'})
+
 
 class EditForm(dexterity.EditForm):
     """ Custom edit form which hides authToken
@@ -340,7 +397,8 @@ class AddForm(DefaultAddForm):
         """ """
         # Some custom code here
         super(AddForm, self).updateWidgets()
-        self.widgets['monitorAuthToken'].mode = 'hidden' 
+        self.widgets['monitorAuthToken'].mode = 'hidden'
+
 
 class AddView(DefaultAddView):
     form = AddForm
