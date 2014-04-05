@@ -16,9 +16,6 @@ from Products.CMFCore.utils import getToolByName
 from plone.supermodel import model
 from cs492.plonemodeling import MessageFactory as _
 
-from zope.component import getUtility
-from zope.schema.interfaces import IVocabularyFactory
-
 import socket, string, random
 
 from cs492.plonemodeling.virtual_machine import IVirtualMachine
