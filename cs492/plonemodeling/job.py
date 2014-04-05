@@ -100,11 +100,7 @@ class Job(Item):
     grok.implements(IJob)
 
     # Add your class methods and properties here
-    indexList = []
  
-    def __init__(self):
-        self.indexList = []
-
     def getTitle(self):
         return self.title
 
@@ -124,29 +120,6 @@ class Job(Item):
 
     def getId(self):
         return self.id;
-
-  
-
-
-    def getJobList(self):
-        print "enter"
-        context = aq_inner(self)
-        catalog = getToolByName(context, 'portal_catalog')
-        all_jobs = catalog.searchResults(portal_type= 'cs492.plonemodeling.job',sort_on='modified', sort_order='ascending')
-        for brain in all_jobs:
-            self.indexList.append(brain);
-        
-    def getJobIndex(self):
-        #get the joblist sorted by last modified time.
-        if len(self.indexList) is 0:
-            self.getJobList()
-        i = 0
-        for curJob in self.indexList:
-            if curJob.getObject().getId() is self.getId():
-                return i
-            i = i+1
-        return "x"
-
 
 # View class
 # The view will automatically use a similarly named template in

@@ -10,6 +10,9 @@ import ZODB.FileStorage
 import ZODB.serialize
 import operator
 
+queued = []
+unqueued = []
+
 def time_compare(x, y):
     if x['start'] is None:
 	return 1
@@ -45,11 +48,19 @@ def get_job_query(self):
     mt =  getToolByName(self, 'portal_membership') 
     currentUser = mt.getAuthenticatedMember() 
    
-    if "Site Administrators" not in currentUser.getGroups():
-	return catalog.searchResults(portal_type= 'cs492.plonemodeling.job', 				 Creator = currentUser.getUserName())
-    else: 
-        return catalog.searchResults(portal_type= 'cs492.plonemodeling.job')
-
+    all_jobs = catalog.searchResults(portal_type= 'cs492.plonemodeling.job', sort_in='modified', sort_order='ascending')
+    queued = []
+    unqueued = []
+    i = 1
+    for brain in all_jobs:
+        if brain.getObject().getStatus() == "queued":
+            if ("Site Administrators" in currentUser.getGroups() or brain["Creator"] == currentUser.getUserName()):
+                queued.append([i,brain])
+            i += 1
+        else:
+            if ("Site Administrators" in currentUser.getGroups() or brain["Creator"] == currentUser.getUserName()):
+                unqueued.append(["-",brain])
+    return queued + unqueued
 
 class JobsView(BrowserView):
 
@@ -58,13 +69,8 @@ class JobsView(BrowserView):
     def __call__(self):    
 		
 	all_jobs = get_job_query(self)
-	retStringg = ""
-	joblist=[]
-	for brain in all_jobs:
-	    joblist.append(brain)
 	   
-	joblist.sort(time_compare)
-	self.all_jobs = getattr(self.context, 'all_jobs', joblist)
+	self.all_jobs = getattr(self.context, 'all_jobs', all_jobs)
 	return self.template()
   
 
