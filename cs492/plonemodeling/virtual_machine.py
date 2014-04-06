@@ -245,7 +245,6 @@ class getNextJob(grok.View):
     """ get next job to be run on virtual machine """
 
     grok.context(IVirtualMachine)
-    grok.require('zope2.View')
     grok.name('get_next_job')
 
     def render(self):
