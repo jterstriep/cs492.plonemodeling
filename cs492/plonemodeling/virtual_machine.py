@@ -180,7 +180,7 @@ class VirtualMachine(Container):
             if instance_status != 'pending':
                 break
             time.sleep(10)
-        logger.info('status of the instance is', instance_status)
+        logger.info('status of the instance is ' + instance_status)
         if instance_status == 'running':
             job.instance = instance.public_dns_name
             self.running_vm_id = instance.id
