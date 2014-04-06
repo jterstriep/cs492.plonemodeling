@@ -128,6 +128,9 @@ class VirtualMachine(Container):
     def getTitle(self):
         return self.title
 
+    def getInstanceStatus(self):
+        
+
     def get_monitor_key(self):
         AUTH_TOKEN_LENGTH = 10
         if self.monitorAuthToken:
@@ -273,7 +276,7 @@ class getNextJob(grok.View):
         current_vm = catalog.unrestrictedTraverse(path)
 
         try:
-            job_path = current_vm.current_job_url
+            job_path = current_vm.current_job
         except:
             job_path = None
 
@@ -285,7 +288,7 @@ class getNextJob(grok.View):
             if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
                 next_job = find_next_job(current_vm, catalog)
                 if next_job:
-                    current_vm.current_job = next_job.absolute_url_path()
+                    current_vm.current_job = next_job
                     next_job.job_status = 'Running'
                     next_job.start()
                     
@@ -336,16 +339,15 @@ class updateJobStatus(grok.View):
         path = context.absolute_url_path()
         current_vm = catalog.unrestrictedTraverse(path)
 
-        job_path = current_vm.current_job_url
+        job_obj = current_vm.current_job
 
-        if job_path:
+        if job_obj:
             # if has job, assume the job is finished
-            job_obj = catalog.unrestrictedTraverse(job_path)
             if job_obj.monitorAuthToken == parse_result['hash'][0]:
                 job_obj.job_status = new_status
                 job_obj.end()
                 # remove the object from the machine
-                current_vm.current_job_url = None
+                current_vm.current_job = None
                 return '{"response": "sucess", "message": "status updated"}'
             else:
                 return '{"response": "fail", "message": "invalid hash"}'
@@ -428,7 +430,7 @@ class AddView(DefaultAddView):
 # Called when a virtual machine is first created.
 @grok.subscribe(IVirtualMachine, IObjectAddedEvent)
 def createVM(vm, event):
-    vm.current_job_url = None
+    vm.current_job = None
     vm.vm_status = "unevaluated"
 
 class provideStatus(grok.View):
