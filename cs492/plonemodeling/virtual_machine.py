@@ -37,7 +37,7 @@ USER_DATA = """
         cd ~
         echo changed directory to $PWD
         echo "downloading monitor script"
-        wget $MONITOR_LOCATION
+        wget -N $MONITOR_LOCATION
 
         if [ -f $MONITOR_FNAME ]; then
         echo "file downloaded successfully"
@@ -135,7 +135,6 @@ class VirtualMachine(Container):
             return instances[0].update()
         except:
             return ''
-        
 
     def get_monitor_key(self):
         AUTH_TOKEN_LENGTH = 10
@@ -348,13 +347,12 @@ class updateJobStatus(grok.View):
         job_obj = current_vm.current_job
 
         if job_obj:
-            # if has job, assume the job is finished
-            if job_obj.monitorAuthToken == parse_result['hash'][0]:
+            if current_vm.monitorAuthToken == parse_result['hash'][0]:
                 job_obj.job_status = new_status
                 job_obj.end()
                 # remove the object from the machine
                 current_vm.current_job = None
-                return '{"response": "sucess", "message": "status updated"}'
+                return '{"response": "success", "message": "status updated"}'
             else:
                 return '{"response": "fail", "message": "invalid hash"}'
         else:
@@ -465,11 +463,7 @@ class provideStatus(grok.View):
           path = context.absolute_url_path()
           current_vm = catalog.unrestrictedTraverse(path)
 
-          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
-               jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
-               for job in jobs:
-                    job_obj = job._unrestrictedGetObject()
-                    if job_obj.virtualMachine == current_vm:
-			return json.dumps({'response': 'success', 'message': job_obj.job_status})
+          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and vm.current_job != None:
+               return json.dumps({'response': 'success', 'message': vm.current_job.job_status})
           return '{"response": "fail", "message": "noJob"}'
 
