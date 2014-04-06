@@ -186,7 +186,7 @@ class VirtualMachine(Container):
             if instance_status != 'pending':
                 break
             time.sleep(10)
-        logger.info('status of the instance is', instance_status)
+        logger.info('status of the instance is ' + instance_status)
         if instance_status == 'running':
             job.instance = instance.public_dns_name
             self.running_vm_id = instance.id
@@ -291,9 +291,11 @@ class getNextJob(grok.View):
         except:
             job_path = None
 
+        job_path = None
+
         if job_path:
             # if has running job, return error since cannot have two running jobs
-            return json.dumps({'response': 'fail', 'message': 'another job running'})
+            return json.dumps({'response': 'NOTOK', 'message': 'another job running'})
         else:
             # if the request is from authorized monitor script
             if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
@@ -460,7 +462,7 @@ class provideStatus(grok.View):
           parse_result = parse_qs(query_string)
 
           if not 'hash' in parse_result:
-               return '{"response": "fail", "message": "noHash"}'
+               return '{"response": "NOTOK", "message": "noHash"}'
           logger.info('the hash is ' + parse_result['hash'][0])
      
           context = aq_inner(self.context)
@@ -469,7 +471,7 @@ class provideStatus(grok.View):
           path = context.absolute_url_path()
           current_vm = catalog.unrestrictedTraverse(path)
 
-          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and vm.current_job != None:
-               return json.dumps({'response': 'success', 'message': vm.current_job.job_status})
-          return '{"response": "fail", "message": "noJob"}'
+          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and current_vm.current_job != None:
+               return json.dumps({'response': 'OK', 'message': current_vm.current_job.job_status})
+          return '{"response": "NOTOK", "message": "noJob"}'
 
