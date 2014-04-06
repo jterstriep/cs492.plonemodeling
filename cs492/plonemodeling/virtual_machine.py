@@ -135,7 +135,6 @@ class VirtualMachine(Container):
             return instances[0].update()
         except:
             return ''
-        
 
     def get_monitor_key(self):
         AUTH_TOKEN_LENGTH = 10
@@ -465,11 +464,7 @@ class provideStatus(grok.View):
           path = context.absolute_url_path()
           current_vm = catalog.unrestrictedTraverse(path)
 
-          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
-               jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
-               for job in jobs:
-                    job_obj = job._unrestrictedGetObject()
-                    if job_obj.virtualMachine == current_vm:
-			return json.dumps({'response': 'success', 'message': job_obj.job_status})
+          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and vm.current_job != None:
+               return json.dumps({'response': 'success', 'message': vm.current_job.job_status})
           return '{"response": "fail", "message": "noJob"}'
 
