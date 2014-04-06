@@ -172,7 +172,7 @@ class VirtualMachine(Container):
             logger.info('Instance type is ' + self.instance_type)
             logger.info('user script is ' + user_data_script)
 
-            reservation = conn.run_instances(self.machineImage, instance_type=self.instance_type, user_data=user_data_script)
+            reservation = conn.run_instances(self.machineImage, instance_type=self.instance_type, user_data=user_data_script,instance_initiated_shutdown_behavior="terminate")
             logger.info('Got a reservation object')
         except Exception, e:
             logger.info('Got exception ' + e.message)
