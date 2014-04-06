@@ -129,7 +129,12 @@ class VirtualMachine(Container):
         return self.title
 
     def getInstanceStatus(self):
-        
+        try:
+            conn = boto.ec2.connect_to_region(region, aws_access_key_id=self.accessKey, aws_secret_access_key=self.secretKey)
+            instances = conn.get_only_instances([running_vm_id])
+            return instances[0].update()
+        except:
+            return ''
 
     def get_monitor_key(self):
         AUTH_TOKEN_LENGTH = 10
@@ -459,11 +464,7 @@ class provideStatus(grok.View):
           path = context.absolute_url_path()
           current_vm = catalog.unrestrictedTraverse(path)
 
-          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
-               jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
-               for job in jobs:
-                    job_obj = job._unrestrictedGetObject()
-                    if job_obj.virtualMachine == current_vm:
-			return json.dumps({'response': 'success', 'message': job_obj.job_status})
+          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and vm.current_job != None:
+               return json.dumps({'response': 'success', 'message': vm.current_job.job_status})
           return '{"response": "fail", "message": "noJob"}'
 
