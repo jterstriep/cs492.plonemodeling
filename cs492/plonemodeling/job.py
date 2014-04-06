@@ -22,6 +22,7 @@ from cs492.plonemodeling.virtual_machine import IVirtualMachine
 import urllib
 import boto.ec2
 import time
+import json
 from datetime import datetime
 
 import logging
@@ -162,3 +163,28 @@ def createJob(job, event):
     context = aq_inner(job)
     result = virtualMachine.start_machine(context, job)
     logger.info(result)
+
+
+class changeJobStatus(grok.View):
+
+    grok.context(IJob)
+    grok.require('zope2.View')
+    grok.name('change_jobstatus')
+
+    def render(self):
+        self.request.response.setHeader('Content-type', 'application/json')
+        context = aq_inner(self.context)
+	status_string = context.job_status;
+
+	if status_string == 'Pending' or 'Terminated' or 'Failed' or 'Finished':
+	    context.job_status = 'Queued'
+	if status_string == 'Running':
+	    context.job_status = 'Terminated'
+	if status_string == 'Queued': 
+	    context.job_status = 'Pending'
+
+        return json.dumps({'response': context.job_status})
+
+
+
+
