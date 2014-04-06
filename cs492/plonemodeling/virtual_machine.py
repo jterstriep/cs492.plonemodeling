@@ -149,8 +149,8 @@ class VirtualMachine(Container):
     def start_machine(self, job_context, job):
         logger = logging.getLogger('Plone')
         logger.info('start_machine method called')
-        if self.running_vm_id:
-            return False
+        #if self.running_vm_id:
+            #return False
 
         ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/"
         vm_context = aq_inner(self)
@@ -235,7 +235,7 @@ def find_next_job(vm, catalog):
     for job in jobs:
         job_obj = job._unrestrictedGetObject()
 
-        if getToolByName(job_obj, 'virtualmachine').to_object == vm and \
+        if getToolByName(job_obj, 'virtualMachine').to_object == vm and \
             job_obj.job_status == 'Queued' and \
                 (not next_job or next_job.modified.greaterThan(job_obj.modified)):
             next_job = job_obj
@@ -296,16 +296,16 @@ class getNextJob(grok.View):
                 if next_job:
                     current_vm.current_job = next_job
                     next_job.job_status = 'Running'
-                    next_job.start()
+                    #next_job.start()
                     
                     return json.dumps({
-                        'response': 'success',
+                        'response': 'OK',
                         'start_string': next_job.startString,
                         })
                 else:
-                    return json.dumps({'response': 'fail', 'message': 'no jobs to be run'})
+                    return json.dumps({'response': 'NOTOK', 'message': 'no jobs to be run'})
             else:
-                return json.dumps({'response': 'fail', 'message': 'invalid hash'})
+                return json.dumps({'response': 'NOTOK', 'message': 'invalid hash'})
 
 
 class updateJobStatus(grok.View):
