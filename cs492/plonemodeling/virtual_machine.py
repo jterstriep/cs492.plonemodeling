@@ -19,6 +19,7 @@ import random
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 import boto.ec2
 import time
+from datetime import datetime
 
 
 ## imports to redefine Add and View forms
@@ -103,6 +104,11 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
     monitorAuthToken = schema.TextLine(
         title=_(u"Monitor authorization token"),
         required=False
+    )
+
+    lastAccessTime = schema.TextLine(
+          title=_(u"Last Access Time"),
+          required=False
     )
 
 
@@ -346,22 +352,22 @@ class updateJobStatus(grok.View):
         current_vm = catalog.unrestrictedTraverse(path)
 
         job_obj = current_vm.current_job
-
-        if job_obj:
-            if current_vm.monitorAuthToken == parse_result['hash'][0]:
+        
+        if current_vm.monitorAuthToken == parse_result['hash'][0]:
+            current_vm.lastAccessTime = str(datetime.now())
+            if job_obj:     
                 job_obj.job_status = new_status
                 job_obj.end()
                 # remove the object from the machine
                 current_vm.current_job = None
                 return '{"response": "success", "message": "status updated"}'
             else:
-                return '{"response": "fail", "message": "invalid hash"}'
-        else:
             # if no job, then request is invalid
             # return error
-            return '{"response": "fail", "message": "job is not found"}'
-
-
+                return '{"response": "fail", "message": "job is not found"}'            
+        else:
+            return '{"response": "fail", "message": "invalid hash"}'
+        
 class testMachine(grok.View):
 
     grok.context(IVirtualMachine)
