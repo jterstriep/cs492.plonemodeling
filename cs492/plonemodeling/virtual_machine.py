@@ -25,8 +25,7 @@ import time
 from plone.directives import dexterity
 from plone.dexterity.browser.add import DefaultAddForm, DefaultAddView
 
-USER_DATA = """
-    #!/bin/bash
+USER_DATA = """#!/bin/bash
 
     MONITOR_LOCATION="https://raw.github.com/falkrust/PloneMonitor/master/monitor.py"
     MONITOR_FNAME="monitor.py"
