@@ -37,7 +37,7 @@ USER_DATA = """
         cd ~
         echo changed directory to $PWD
         echo "downloading monitor script"
-        wget $MONITOR_LOCATION
+        wget -N $MONITOR_LOCATION
 
         if [ -f $MONITOR_FNAME ]; then
         echo "file downloaded successfully"
@@ -148,8 +148,8 @@ class VirtualMachine(Container):
     def start_machine(self, job_context, job):
         logger = logging.getLogger('Plone')
         logger.info('start_machine method called')
-        if self.running_vm_id:
-            return False
+        #if self.running_vm_id:
+            #return False
 
         ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/"
         vm_context = aq_inner(self)
@@ -234,7 +234,7 @@ def find_next_job(vm, catalog):
     for job in jobs:
         job_obj = job._unrestrictedGetObject()
 
-        if getToolByName(job_obj, 'virtualmachine').to_object == vm and \
+        if getToolByName(job_obj, 'virtualMachine').to_object == vm and \
             job_obj.job_status == 'Queued' and \
                 (not next_job or next_job.modified.greaterThan(job_obj.modified)):
             next_job = job_obj
@@ -295,16 +295,16 @@ class getNextJob(grok.View):
                 if next_job:
                     current_vm.current_job = next_job
                     next_job.job_status = 'Running'
-                    next_job.start()
+                    #next_job.start()
                     
                     return json.dumps({
-                        'response': 'success',
+                        'response': 'OK',
                         'start_string': next_job.startString,
                         })
                 else:
-                    return json.dumps({'response': 'fail', 'message': 'no jobs to be run'})
+                    return json.dumps({'response': 'NOTOK', 'message': 'no jobs to be run'})
             else:
-                return json.dumps({'response': 'fail', 'message': 'invalid hash'})
+                return json.dumps({'response': 'NOTOK', 'message': 'invalid hash'})
 
 
 class updateJobStatus(grok.View):
@@ -347,13 +347,12 @@ class updateJobStatus(grok.View):
         job_obj = current_vm.current_job
 
         if job_obj:
-            # if has job, assume the job is finished
-            if job_obj.monitorAuthToken == parse_result['hash'][0]:
+            if current_vm.monitorAuthToken == parse_result['hash'][0]:
                 job_obj.job_status = new_status
                 job_obj.end()
                 # remove the object from the machine
                 current_vm.current_job = None
-                return '{"response": "sucess", "message": "status updated"}'
+                return '{"response": "success", "message": "status updated"}'
             else:
                 return '{"response": "fail", "message": "invalid hash"}'
         else:

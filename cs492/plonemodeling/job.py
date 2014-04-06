@@ -39,32 +39,6 @@ job_status_list = SimpleVocabulary(
 AUTH_TOKEN_LENGTH = 10
 # Interface class; used to define content-type schema.
 
-USER_DATA = """
-    #!/bin/bash
-
-    MONITOR_LOCATION="https://raw.github.com/falkrust/PloneMonitor/master/monitor.py"
-    MONITOR_FNAME="monitor.py"
-
-    function monitor_setup {
-        # $1 is plone location
-        # $2 is authToken
-        cd ~
-        echo changed directory to $PWD
-        echo "downloading monitor script"
-        wget $MONITOR_LOCATION
-
-        if [ -f $MONITOR_FNAME ]; then
-        echo "file downloaded successfully"
-        echo "setting exec permissions"
-        chmod +x $MONITOR_FNAME
-
-        echo "Calling the monitor script now"
-        python2 $MONITOR_FNAME $1 $2
-        fi
-    }
-
-"""
-
 class IJob(model.Schema, IImageScaleTraversable):
     """
     Job which needs to be run on scientific model
