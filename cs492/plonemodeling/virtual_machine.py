@@ -280,7 +280,10 @@ class getNextJob(grok.View):
         path = context.absolute_url_path()
         current_vm = catalog.unrestrictedTraverse(path)
 
-        job_path = current_vm.current_job_url
+        try:
+            job_path = current_vm.current_job_url
+        except:
+            job_path = None
 
         if job_path:
             # if has running job, return error since cannot have two running jobs
@@ -434,5 +437,5 @@ class AddView(DefaultAddView):
 # Called when a virtual machine is first created.
 @grok.subscribe(IVirtualMachine, IObjectAddedEvent)
 def createVM(vm, event):
-
+    vm.current_job_url = None
     vm.vm_status = "unevaluated"
