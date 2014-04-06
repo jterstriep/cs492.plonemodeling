@@ -129,6 +129,12 @@ class VirtualMachine(Container):
         return self.title
 
     def getInstanceStatus(self):
+        try:
+            conn = boto.ec2.connect_to_region(region, aws_access_key_id=self.accessKey, aws_secret_access_key=self.secretKey)
+            instances = conn.get_only_instances([running_vm_id])
+            return instances[0].update()
+        except:
+            return ''
         
 
     def get_monitor_key(self):
