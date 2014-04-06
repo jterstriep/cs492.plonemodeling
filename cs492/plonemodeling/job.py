@@ -111,10 +111,28 @@ class Job(Item):
     def getStartTime(self):
         if self.start is None:
             return "--"
-        return self.start
+        return str(self.start)
 
     def getEndTime(self):
-        return self.end
+        if self.end is None:
+            return "--"
+        return str(self.end)
+
+    def start(self):
+        self.start = datetime.now()
+
+    def end(self):
+        self.end = datetime.now()
+
+    def getCreationTime(self):
+        if self.creation is None:
+            return "--"
+        return str(self.creation)
+
+    def getDuration(self):
+        if self.start is None or self.end is None:
+            return "--"
+        return str(self.end - self.start)
 
     def getVMTitle(self):
         return self.virtualMachine.to_object.getTitle()
@@ -147,8 +165,9 @@ def createJob(job, event):
     logger = logging.getLogger("Plone")
 
     ## assign time upon job creation.
-    job.start = str(datetime.now())
-    
+    job.creation = str(datetime.now())
+    job.start = None
+    job.end = None
 
     ## create authorization token
     job.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase \
@@ -161,34 +180,5 @@ def createJob(job, event):
 
     virtualMachine = getToolByName(job, 'virtualMachine').to_object
     context = aq_inner(job)
-    catalog = getToolByName(context, 'portal_catalog')
-    jobs = catalog.searchResults(portal_type='cs492.plonemodeling.job')
-    for job_query in jobs:
-            # do not do anything if a job is running on the vm
-            if getToolByName(job_query.getObject(), 'virtualMachine').to_object == virtualMachine \
-                    and job_query.getObject().job_status == "Running":
-                logger.info('Going to return')
-                return
-
-    accessKey = virtualMachine.accessKey
-    secretKey = virtualMachine.secretKey
-    machineImage = virtualMachine.machineImage
-    instanceType = virtualMachine.instance_type
-    region = virtualMachine.region
-    ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/"
-    vm_context = aq_inner(virtualMachine)
-    vm_path = ploneLocation + vm_context.absolute_url_path()
-    logger.info('vm path is', vm_path)
-
-    user_data_script = USER_DATA + 'monitor_setup ' + vm_path + ' ' + virtualMachine.get_next_key()
-
-    logger.info(region)
-    conn = boto.ec2.connect_to_region(region, aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
-    reservation = conn.run_instances(machineImage,instance_type=instanceType,user_data=user_data_script)
-    instance = reservation.instances[0]
-    status = instance.update()
-    while status == 'pending':
-        time.sleep(10)
-        status = instance.update()
-    if status == 'running':
-        job.instance = instance.public_dns_name
+    result = virtualMachine.start_machine(context, job)
+    logger.info(result)
