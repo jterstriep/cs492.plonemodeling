@@ -215,15 +215,7 @@ class SampleView(grok.View):
 
 def is_authorized_monitor(vm, hashkey, catalog):
     """ Helper method to check if monitorAuthToken is valid """
-
-    jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
-    for job in jobs:
-        job_obj = job._unrestrictedGetObject()
-        # if the request if from authorized monitor script
-        if job_obj.monitorAuthToken == hashkey and \
-                getToolByName(job_obj, 'virtualmachine').to_object == vm:
-            return True
-    return False
+    return vm.monitorAuthToken == hashkey
 
 
 def find_next_job(vm, catalog):
@@ -314,7 +306,6 @@ class updateJobStatus(grok.View):
     """
 
     grok.context(IVirtualMachine)
-    grok.require('zope2.View')
     grok.name('update_job_status')
 
     def render(self):
@@ -439,3 +430,38 @@ class AddView(DefaultAddView):
 def createVM(vm, event):
     vm.current_job_url = None
     vm.vm_status = "unevaluated"
+
+class provideStatus(grok.View):
+
+     grok.context(IVirtualMachine)
+     grok.name('provide_status')
+
+     def render(self):
+
+          self.request.response.setHeader('Content-type', 'application/json')
+
+          ## logging for demo
+          logger = logging.getLogger('Plone')
+          logger.info('Job status requested')
+
+          query_string = self.request['QUERY_STRING']
+          parse_result = parse_qs(query_string)
+
+          if not 'hash' in parse_result:
+               return '{"response": "fail", "message": "noHash"}'
+          logger.info('the hash is ' + parse_result['hash'][0])
+     
+          context = aq_inner(self.context)
+          catalog = getToolByName(context, 'portal_catalog')
+
+          path = context.absolute_url_path()
+          current_vm = catalog.unrestrictedTraverse(path)
+
+          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
+               jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
+               for job in jobs:
+                    job_obj = job._unrestrictedGetObject()
+                    if job_obj.virtualMachine == current_vm:
+			return json.dumps({'response': 'success', 'message': job_obj.job_status})
+          return '{"response": "fail", "message": "noJob"}'
+
