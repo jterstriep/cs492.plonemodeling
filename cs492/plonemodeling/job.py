@@ -136,7 +136,7 @@ class Job(Item):
         return str(self.end - self.start)
 
     def getVMTitle(self):
-        return self.virtualMachine.to_object.getTitle()
+        return self.virtualMachine.to_object.title
 
     def getId(self):
         return self.id;
