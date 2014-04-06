@@ -303,7 +303,6 @@ class updateJobStatus(grok.View):
     """
 
     grok.context(IVirtualMachine)
-    grok.require('zope2.View')
     grok.name('update_job_status')
 
     def render(self):
@@ -431,7 +430,6 @@ def createVM(vm, event):
 class provideStatus(grok.View):
 
      grok.context(IVirtualMachine)
-     grok.require('zope2.View')
      grok.name('provide_status')
 
      def render(self):
