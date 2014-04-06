@@ -37,7 +37,7 @@ USER_DATA = """
         cd ~
         echo changed directory to $PWD
         echo "downloading monitor script"
-        wget $MONITOR_LOCATION
+        wget -N $MONITOR_LOCATION
 
         if [ -f $MONITOR_FNAME ]; then
         echo "file downloaded successfully"

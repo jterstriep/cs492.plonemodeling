@@ -39,7 +39,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="context/start"></div></td>
+		<td><div tal:content="context/creation"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -53,7 +53,7 @@
 	
 
 
-     <!-- Finished jobs provide start time, end time, run duration and button to requeue -->
+     <!-- Finished jobs provide creation time, end time, run duration and button to requeue -->
      <table class = "jobTable"  tal:condition="python:context.job_status == 'Finished'">
         <tr>
 		<td>Assigned to: </td>
@@ -61,7 +61,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="context/start"></div></td>
+		<td><div tal:content="context/creation"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -73,8 +73,8 @@
 		<td><div><button onclick = "changeJobStatus()">Queue</button></div></td>
 	</tr>
         <tr>
-		<td>Start Time: </td>
-		<td><div tal:content="context/start"></div></td>
+		<td>creation Time: </td>
+		<td><div tal:content="context/creation"></div></td>
 	</tr>
         <tr>
 		<td>End Time: </td>
@@ -86,7 +86,7 @@
 	</tr>	
     </table>
 
-<!-- Failed jobs provide start time, end time, run duration and button to requeue -->
+<!-- Failed jobs provide creation time, end time, run duration and button to requeue -->
      <table class = "jobTable"  tal:condition="python:context.job_status == 'Failed'">
         <tr>
 		<td>Assigned to: </td>
@@ -94,7 +94,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="context/start"></div></td>
+		<td><div tal:content="context/creation"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -108,7 +108,7 @@
     </table>
 
 
-<!-- Terminated jobs provide start time, end time, run duration and button to requeue -->
+<!-- Terminated jobs provide creation time, end time, run duration and button to requeue -->
      <table class = "jobTable"  tal:condition="python:context.job_status == 'Terminated'">
         <tr>
 		<td>Assigned to: </td>
@@ -116,7 +116,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="context/start"></div></td>
+		<td><div tal:content="context/creation"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -128,8 +128,8 @@
 		<td><div><button onclick = "changeJobStatus()">Queue</button></div></td>
 	</tr>
         <tr>
-		<td>Start Time: </td>
-		<td><div tal:content="context/start"></div></td>
+		<td>creation Time: </td>
+		<td><div tal:content="context/creation"></div></td>
 	</tr>
         <tr>
 		<td>Terminate Time: </td>
@@ -144,15 +144,14 @@
 
 
 
-  <!-- Running jobs provide start time, end time, run duration and button to requeue -->
+  <!-- Running jobs provide creation time, end time, run duration and button to requeue -->
      <table class = "jobTable"  tal:condition="python:context.job_status == 'Running'">
         <tr>
 		<td>Assigned to: </td>
 		<td><div tal:content="context/getVMTitle"></div></td>
 	</tr>
 	<tr>
-		<td>Creation time: </td>
-		<td><div tal:content="context/start"></div></td>
+		<td><div tal:content="context/creation"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -164,8 +163,8 @@
 		<td><div><button onclick = "changeJobStatus()">Terminate</button></div></td>
 	</tr>
         <tr>
-		<td>Start Time: </td>
-		<td><div tal:content="context/start"></div></td>
+		<td>creation Time: </td>
+		<td><div tal:content="context/creation"></div></td>
 	</tr>
         
 	<tr>
@@ -175,7 +174,7 @@
 
     </table>
 
- <!-- Queued jobs provide start time, end time, run duration and button to requeue -->
+ <!-- Queued jobs provide creation time, end time, run duration and button to requeue -->
      <table class = "jobTable"  tal:condition="python:context.job_status == 'Queued'">
         <tr>
 		<td>Assigned to: </td>
@@ -183,7 +182,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="context/start"></div></td>
+		<td><div tal:content="context/creation"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
