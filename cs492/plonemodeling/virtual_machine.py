@@ -347,13 +347,12 @@ class updateJobStatus(grok.View):
         job_obj = current_vm.current_job
 
         if job_obj:
-            # if has job, assume the job is finished
-            if job_obj.monitorAuthToken == parse_result['hash'][0]:
+            if current_vm.monitorAuthToken == parse_result['hash'][0]:
                 job_obj.job_status = new_status
                 job_obj.end()
                 # remove the object from the machine
                 current_vm.current_job = None
-                return '{"response": "sucess", "message": "status updated"}'
+                return '{"response": "success", "message": "status updated"}'
             else:
                 return '{"response": "fail", "message": "invalid hash"}'
         else:
