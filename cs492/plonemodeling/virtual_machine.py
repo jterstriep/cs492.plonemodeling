@@ -456,7 +456,7 @@ class provideStatus(grok.View):
           parse_result = parse_qs(query_string)
 
           if not 'hash' in parse_result:
-               return '{"response": "fail", "message": "noHash"}'
+               return '{"response": "NOTOK", "message": "noHash"}'
           logger.info('the hash is ' + parse_result['hash'][0])
      
           context = aq_inner(self.context)
@@ -466,6 +466,6 @@ class provideStatus(grok.View):
           current_vm = catalog.unrestrictedTraverse(path)
 
           if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and vm.current_job != None:
-               return json.dumps({'response': 'success', 'message': current_vm.current_job.job_status})
-          return '{"response": "fail", "message": "noJob"}'
+               return json.dumps({'response': 'OK', 'message': current_vm.current_job.job_status})
+          return '{"response": "NOTOK", "message": "noJob"}'
 
