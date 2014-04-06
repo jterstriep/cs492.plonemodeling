@@ -128,6 +128,9 @@ class VirtualMachine(Container):
     def getTitle(self):
         return self.title
 
+    def getInstanceStatus(self):
+        
+
     def get_monitor_key(self):
         AUTH_TOKEN_LENGTH = 10
         if self.monitorAuthToken:
@@ -215,15 +218,7 @@ class SampleView(grok.View):
 
 def is_authorized_monitor(vm, hashkey, catalog):
     """ Helper method to check if monitorAuthToken is valid """
-
-    jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
-    for job in jobs:
-        job_obj = job._unrestrictedGetObject()
-        # if the request if from authorized monitor script
-        if job_obj.monitorAuthToken == hashkey and \
-                getToolByName(job_obj, 'virtualmachine').to_object == vm:
-            return True
-    return False
+    return vm.monitorAuthToken == hashkey
 
 
 def find_next_job(vm, catalog):
@@ -245,7 +240,6 @@ class getNextJob(grok.View):
     """ get next job to be run on virtual machine """
 
     grok.context(IVirtualMachine)
-    grok.require('zope2.View')
     grok.name('get_next_job')
 
     def render(self):
@@ -281,7 +275,10 @@ class getNextJob(grok.View):
         path = context.absolute_url_path()
         current_vm = catalog.unrestrictedTraverse(path)
 
-        job_path = current_vm.current_job_url
+        try:
+            job_path = current_vm.current_job
+        except:
+            job_path = None
 
         if job_path:
             # if has running job, return error since cannot have two running jobs
@@ -291,8 +288,10 @@ class getNextJob(grok.View):
             if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
                 next_job = find_next_job(current_vm, catalog)
                 if next_job:
-                    current_vm.current_job = next_job.absolute_url_path()
-                    next_job.status = 'Started'
+                    current_vm.current_job = next_job
+                    next_job.job_status = 'Running'
+                    next_job.start()
+                    
                     return json.dumps({
                         'response': 'success',
                         'start_string': next_job.startString,
@@ -310,7 +309,6 @@ class updateJobStatus(grok.View):
     """
 
     grok.context(IVirtualMachine)
-    grok.require('zope2.View')
     grok.name('update_job_status')
 
     def render(self):
@@ -341,15 +339,15 @@ class updateJobStatus(grok.View):
         path = context.absolute_url_path()
         current_vm = catalog.unrestrictedTraverse(path)
 
-        job_path = current_vm.current_job_url
+        job_obj = current_vm.current_job
 
-        if job_path:
+        if job_obj:
             # if has job, assume the job is finished
-            job_obj = catalog.unrestrictedTraverse(job_path)
             if job_obj.monitorAuthToken == parse_result['hash'][0]:
                 job_obj.job_status = new_status
+                job_obj.end()
                 # remove the object from the machine
-                current_vm.current_job_url = None
+                current_vm.current_job = None
                 return '{"response": "sucess", "message": "status updated"}'
             else:
                 return '{"response": "fail", "message": "invalid hash"}'
@@ -432,5 +430,40 @@ class AddView(DefaultAddView):
 # Called when a virtual machine is first created.
 @grok.subscribe(IVirtualMachine, IObjectAddedEvent)
 def createVM(vm, event):
-
+    vm.current_job = None
     vm.vm_status = "unevaluated"
+
+class provideStatus(grok.View):
+
+     grok.context(IVirtualMachine)
+     grok.name('provide_status')
+
+     def render(self):
+
+          self.request.response.setHeader('Content-type', 'application/json')
+
+          ## logging for demo
+          logger = logging.getLogger('Plone')
+          logger.info('Job status requested')
+
+          query_string = self.request['QUERY_STRING']
+          parse_result = parse_qs(query_string)
+
+          if not 'hash' in parse_result:
+               return '{"response": "fail", "message": "noHash"}'
+          logger.info('the hash is ' + parse_result['hash'][0])
+     
+          context = aq_inner(self.context)
+          catalog = getToolByName(context, 'portal_catalog')
+
+          path = context.absolute_url_path()
+          current_vm = catalog.unrestrictedTraverse(path)
+
+          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
+               jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
+               for job in jobs:
+                    job_obj = job._unrestrictedGetObject()
+                    if job_obj.virtualMachine == current_vm:
+			return json.dumps({'response': 'success', 'message': job_obj.job_status})
+          return '{"response": "fail", "message": "noJob"}'
+
