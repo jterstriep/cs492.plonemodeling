@@ -107,8 +107,8 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
     )
 
     lastAccessTime = schema.TextLine(
-          title=_(u"Last Access Time"),
-          required=False
+        title=_(u"Last Access Time"),
+        required=False
     )
 
 
@@ -135,8 +135,10 @@ class VirtualMachine(Container):
 
     def getInstanceStatus(self):
         try:
-            conn = boto.ec2.connect_to_region(region, aws_access_key_id=self.accessKey, aws_secret_access_key=self.secretKey)
-            instances = conn.get_only_instances([running_vm_id])
+            conn = boto.ec2.connect_to_region(self.region,
+                                              aws_access_key_id=self.accessKey,
+                                              aws_secret_access_key=self.secretKey)
+            instances = conn.get_only_instances([self.running_vm_id])
             return instances[0].update()
         except:
             return ''
@@ -172,7 +174,9 @@ class VirtualMachine(Container):
             logger.info('Instance type is ' + self.instance_type)
             logger.info('user script is ' + user_data_script)
 
-            reservation = conn.run_instances(self.machineImage, instance_type=self.instance_type, user_data=user_data_script,instance_initiated_shutdown_behavior="terminate")
+            reservation = conn.run_instances(self.machineImage, instance_type=self.instance_type,
+                                             user_data=user_data_script,
+                                             instance_initiated_shutdown_behavior="terminate")
             logger.info('Got a reservation object')
         except Exception, e:
             logger.info('Got exception ' + e.message)
@@ -303,7 +307,7 @@ class getNextJob(grok.View):
                     current_vm.current_job = next_job
                     next_job.job_status = 'Running'
                     #next_job.start()
-                    
+
                     return json.dumps({
                         'response': 'OK',
                         'start_string': next_job.startString,
@@ -352,10 +356,10 @@ class updateJobStatus(grok.View):
         current_vm = catalog.unrestrictedTraverse(path)
 
         job_obj = current_vm.current_job
-        
+
         if current_vm.monitorAuthToken == parse_result['hash'][0]:
             current_vm.lastAccessTime = str(datetime.now())
-            if job_obj:     
+            if job_obj:
                 job_obj.job_status = new_status
                 job_obj.end()
                 # remove the object from the machine
@@ -364,10 +368,11 @@ class updateJobStatus(grok.View):
             else:
             # if no job, then request is invalid
             # return error
-                return '{"response": "fail", "message": "job is not found"}'            
+                return '{"response": "fail", "message": "job is not found"}'
         else:
             return '{"response": "fail", "message": "invalid hash"}'
-        
+
+
 class testMachine(grok.View):
 
     grok.context(IVirtualMachine)
@@ -444,33 +449,33 @@ def createVM(vm, event):
     vm.current_job = None
     vm.vm_status = "unevaluated"
 
+
 class provideStatus(grok.View):
 
-     grok.context(IVirtualMachine)
-     grok.name('provide_status')
+    grok.context(IVirtualMachine)
+    grok.name('provide_status')
 
-     def render(self):
+    def render(self):
 
-          self.request.response.setHeader('Content-type', 'application/json')
+        self.request.response.setHeader('Content-type', 'application/json')
 
-          ## logging for demo
-          logger = logging.getLogger('Plone')
-          logger.info('Job status requested')
+        ## logging for demo
+        logger = logging.getLogger('Plone')
+        logger.info('Job status requested')
 
-          query_string = self.request['QUERY_STRING']
-          parse_result = parse_qs(query_string)
+        query_string = self.request['QUERY_STRING']
+        parse_result = parse_qs(query_string)
 
-          if not 'hash' in parse_result:
-               return '{"response": "NOTOK", "message": "noHash"}'
-          logger.info('the hash is ' + parse_result['hash'][0])
-     
-          context = aq_inner(self.context)
-          catalog = getToolByName(context, 'portal_catalog')
+        if not 'hash' in parse_result:
+            return '{"response": "NOTOK", "message": "noHash"}'
+        logger.info('the hash is ' + parse_result['hash'][0])
 
-          path = context.absolute_url_path()
-          current_vm = catalog.unrestrictedTraverse(path)
+        context = aq_inner(self.context)
+        catalog = getToolByName(context, 'portal_catalog')
 
-          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and current_vm.current_job != None:
-               return json.dumps({'response': 'OK', 'message': current_vm.current_job.job_status})
-          return '{"response": "NOTOK", "message": "noJob"}'
+        path = context.absolute_url_path()
+        current_vm = catalog.unrestrictedTraverse(path)
 
+        if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and not current_vm.current_job:
+            return json.dumps({'response': 'OK', 'message': current_vm.current_job.job_status})
+        return '{"response": "NOTOK", "message": "noJob"}'
