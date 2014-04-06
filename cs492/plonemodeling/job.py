@@ -170,7 +170,7 @@ class changeJobStatus(grok.View):
         context = aq_inner(self.context)
 	status_string = context.job_status;
 
-	if status_string == 'Pending' or 'Terminated' or 'Failed' or 'Finished':
+	if status_string == ('Pending' or 'Terminated' or 'Failed' or 'Finished'):
 	    context.job_status = 'Queued'
 	if status_string == 'Running':
 	    context.job_status = 'Terminated'

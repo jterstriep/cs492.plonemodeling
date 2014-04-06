@@ -465,7 +465,7 @@ class provideStatus(grok.View):
           path = context.absolute_url_path()
           current_vm = catalog.unrestrictedTraverse(path)
 
-          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and vm.current_job != None:
+          if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and current_vm.current_job != None:
                return json.dumps({'response': 'OK', 'message': current_vm.current_job.job_status})
           return '{"response": "NOTOK", "message": "noJob"}'
 
