@@ -26,30 +26,8 @@ from datetime import datetime
 from plone.directives import dexterity
 from plone.dexterity.browser.add import DefaultAddForm, DefaultAddView
 
-USER_DATA = """#!/bin/bash
+import user_data_scripts as scripts
 
-    MONITOR_LOCATION="https://raw.github.com/falkrust/PloneMonitor/master/monitor.py"
-    MONITOR_FNAME="monitor.py"
-
-    function monitor_setup {
-        # $1 is plone location
-        # $2 is authToken
-        cd ~
-        echo changed directory to $PWD
-        echo "downloading monitor script"
-        wget -N $MONITOR_LOCATION
-
-        if [ -f $MONITOR_FNAME ]; then
-        echo "file downloaded successfully"
-        echo "setting exec permissions"
-        chmod +x $MONITOR_FNAME
-
-        echo "Calling the monitor script now"
-        python2 $MONITOR_FNAME $1 $2
-        fi
-    }
-
-"""
 
 region_list = SimpleVocabulary(
     [SimpleTerm(value=u'us-east-1', title=_(u'us-east-1')),
@@ -164,7 +142,7 @@ class VirtualMachine(Container):
         logger.info('vm path is' + str(vm_path))
 
         try:
-            user_data_script = USER_DATA + 'monitor_setup ' + vm_path + ' ' + self.get_monitor_key()
+            user_data_script = scripts.MONITOR_SCRIPT + 'monitor_setup ' + vm_path + ' ' + self.get_monitor_key()
 
             logger.info('Credentials are ' + self.accessKey + self.secretKey)
             conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
