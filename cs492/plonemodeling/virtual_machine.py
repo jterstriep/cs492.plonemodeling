@@ -422,10 +422,10 @@ class testMachine(grok.View):
                                                              + string.digits) for _ in range(10))
             logger.info('here')
             logger.info(context.test_vm_hash)
-            test_endpoint = context.request['URL']
+            test_endpoint = self.request['URL']
             test_endpoint = urljoin(test_endpoint, 'test_connection')
             test_endpoint += '?hash=' + context.test_vm_hash
-            logging.info('test_endpoint is {}' % test_endpoint)
+            logging.info('test_endpoint is %s' % test_endpoint)
             user_data = scripts.TEST_VM_SCRIPT + test_endpoint
             reservation = conn.run_instances(machineImage,
                                              instance_type=instanceType,
