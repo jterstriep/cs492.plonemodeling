@@ -426,7 +426,7 @@ class testMachine(grok.View):
             test_endpoint = urljoin(test_endpoint, 'test_connection')
             test_endpoint += '?hash=' + context.test_vm_hash
             logging.info('test_endpoint is %s' % test_endpoint)
-            user_data = scripts.TEST_VM_SCRIPT + test_endpoint
+            user_data = scripts.TEST_MACHINE_SCRIPT + test_endpoint
             reservation = conn.run_instances(machineImage,
                                              instance_type=instanceType,
                                              user_data=user_data,
