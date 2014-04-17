@@ -24,14 +24,14 @@ MONITOR_SCRIPT = """#!/bin/bash
 """
 
 TEST_MACHINE_SCRIPT = """#!/bin/bash
-	function request_and_shutdown {
-	echo "Making a request to"
-	echo $1
-	wget $1
-	echo "Request complete"
-	echo "Shutting down the machine now"
-	shutdown -h now
-	}
+    function request_and_shutdown {
+        echo "Making a request to"
+        echo $1
+        wget $1
+        echo "Request complete"
+        echo "Shutting down the machine now"
+        shutdown -h now
+    }
 
-	request_and_shutdown $1
+    request_and_shutdown 
 """
