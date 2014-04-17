@@ -387,7 +387,7 @@ class testConnectionEndpoint(grok.View):
         if parse_result['hash'][0] != current_vm.test_vm_hash:
             return '{"response": "fail", "message": "invalid hash"}'
 
-        current_vm['last_test_response_time'] = current_time
+        current_vm.last_test_response_time = current_time
         return '{"response": "success", "message": "your time was logged as %s"}' % \
             str(current_time)
 
