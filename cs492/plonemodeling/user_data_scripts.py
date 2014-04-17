@@ -33,5 +33,4 @@ TEST_MACHINE_SCRIPT = """#!/bin/bash
         shutdown -h now
     }
 
-    request_and_shutdown 
-"""
+    request_and_shutdown """
