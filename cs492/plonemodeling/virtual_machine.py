@@ -440,7 +440,7 @@ class testMachine(grok.View):
             return json.dumps({'response': 'NOTOK', 'message': 'Failed: ' + e.message})
         instance = reservation.instances[0]
         status = instance.update()
-        while status == 'pending':
+        while status == 'pending' or status == 'running':
             time.sleep(10)
             status = instance.update()
 
