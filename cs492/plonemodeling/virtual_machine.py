@@ -10,7 +10,7 @@ from Acquisition import aq_inner
 from cs492.plonemodeling import MessageFactory as _
 import json
 import logging
-from urlparse import parse_qs
+from urlparse import parse_qs, urljoin
 
 import socket
 import string
@@ -26,30 +26,8 @@ from datetime import datetime
 from plone.directives import dexterity
 from plone.dexterity.browser.add import DefaultAddForm, DefaultAddView
 
-USER_DATA = """#!/bin/bash
+import user_data_scripts as scripts
 
-    MONITOR_LOCATION="https://raw.github.com/falkrust/PloneMonitor/master/monitor.py"
-    MONITOR_FNAME="monitor.py"
-
-    function monitor_setup {
-        # $1 is plone location
-        # $2 is authToken
-        cd ~
-        echo changed directory to $PWD
-        echo "downloading monitor script"
-        wget -N $MONITOR_LOCATION
-
-        if [ -f $MONITOR_FNAME ]; then
-        echo "file downloaded successfully"
-        echo "setting exec permissions"
-        chmod +x $MONITOR_FNAME
-
-        echo "Calling the monitor script now"
-        python2 $MONITOR_FNAME $1 $2
-        fi
-    }
-
-"""
 
 region_list = SimpleVocabulary(
     [SimpleTerm(value=u'us-east-1', title=_(u'us-east-1')),
@@ -121,7 +99,8 @@ class VirtualMachine(Container):
 
     # Add your class methods and properties here
     vm_status = 'stopped'
-
+    test_vm_hash = ''
+    last_test_response_time = None
     running_vm_id = ''
 
     def get_next_key(self):
@@ -164,7 +143,7 @@ class VirtualMachine(Container):
         logger.info('vm path is' + str(vm_path))
 
         try:
-            user_data_script = USER_DATA + 'monitor_setup ' + vm_path + ' ' + self.get_monitor_key()
+            user_data_script = scripts.MONITOR_SCRIPT + 'monitor_setup ' + vm_path + ' ' + self.get_monitor_key()
 
             logger.info('Credentials are ' + self.accessKey + self.secretKey)
             conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
@@ -373,6 +352,46 @@ class updateJobStatus(grok.View):
             return '{"response": "fail", "message": "invalid hash"}'
 
 
+class testConnectionEndpoint(grok.View):
+    """ Web service which checks if the plone site can be accessed from vm
+
+        The service is called from test vm to check if plone is accessible
+        Expects authorization token to be passed in the request
+    """
+
+    grok.context(IVirtualMachine)
+    grok.name('test_connection')
+
+    def render(self):
+
+        self.request.response.setHeader('Content-type', 'application/json')
+
+        ## logging for demo
+        logger = logging.getLogger('Plone')
+        logger.info('Job status update requested')
+        logger.info(self.request['ACTUAL_URL'])
+        logger.info(self.request['URL'])
+        query_string = self.request['QUERY_STRING']
+        parse_result = parse_qs(query_string)
+
+        if not 'hash' in parse_result:
+            return '{"response": "fail", "message": "hash is not found"}'
+        current_time = datetime.now()
+
+        context = aq_inner(self.context)
+        catalog = getToolByName(context, 'portal_catalog')
+
+        path = context.absolute_url_path()
+        current_vm = catalog.unrestrictedTraverse(path)
+
+        if parse_result['hash'][0] != current_vm.test_vm_hash:
+            return '{"response": "fail", "message": "invalid hash"}'
+
+        current_vm.last_test_response_time = current_time
+        return '{"response": "success", "message": "your time was logged as %s"}' % \
+            str(current_time)
+
+
 class testMachine(grok.View):
 
     grok.context(IVirtualMachine)
@@ -391,24 +410,45 @@ class testMachine(grok.View):
         region = context.region
         logger = logging.getLogger("Plone")
         logger.info(region)
+        test_start_time = datetime.now()
         try:
             context.vm_status = "Invalid"
-            conn = boto.ec2.connect_to_region(region, aws_access_key_id=accessKey, aws_secret_access_key=secretKey)
-            reservation = conn.run_instances(machineImage, instance_type=instanceType)
+            conn = boto.ec2.connect_to_region(region,
+                                              aws_access_key_id=accessKey,
+                                              aws_secret_access_key=secretKey
+                                              )
+            if not context.test_vm_hash:
+                context.test_vm_hash = ''.join(random.choice(string.ascii_lowercase
+                                                             + string.digits) for _ in range(10))
+            logger.info('here')
+            logger.info(context.test_vm_hash)
+            test_endpoint = self.request['URL']
+            test_endpoint = urljoin(test_endpoint, 'test_connection')
+            test_endpoint += '?hash=' + context.test_vm_hash
+            logging.info('test_endpoint is %s' % test_endpoint)
+            user_data = scripts.TEST_MACHINE_SCRIPT + test_endpoint
+            reservation = conn.run_instances(machineImage,
+                                             instance_type=instanceType,
+                                             user_data=user_data,
+                                             instance_initiated_shutdown_behavior="terminate"
+                                             )
         except boto.exception.EC2ResponseError, e:
-            return json.dumps({'response': 'NOTOK', 'message': e.message})
+            logger.info('Return with boto exception')
+            return json.dumps({'response': 'NOTOK', 'message': 'Failed: ' + e.message})
         except Exception, e:
-            return json.dumps({'response': 'NOTOK', 'message': e.message})
+            logger.info('Return with general exception')
+            return json.dumps({'response': 'NOTOK', 'message': 'Failed: ' + e.message})
         instance = reservation.instances[0]
         status = instance.update()
-        while status == 'pending':
+        while status == 'pending' or status == 'running':
             time.sleep(10)
             status = instance.update()
-        if status != 'running':
-            return json.dumps({'response': 'NOTOK', 'message': 'Instance Status:' + status})
+
+        if not context.last_test_response_time or \
+                context.last_test_response_time < test_start_time:
+            return json.dumps({'response': 'NOTOK', 'message': 'Could not verify the vm'})
 
         context.vm_status = "Valid"
-        conn.terminate_instances(instance.id)
 
         return json.dumps({'response': 'OK'})
 
