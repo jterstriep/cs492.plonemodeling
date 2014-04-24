@@ -180,6 +180,20 @@ class VirtualMachine(Container):
         """ Helper method to check if monitorAuthToken is valid """
         return self.monitorAuthToken == hashkey
 
+    def find_next_job(self, catalog):
+        """ helper method to find the first job to be run on current vm """
+
+        jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
+        next_job = None
+        for job in jobs:
+            job_obj = job._unrestrictedGetObject()
+
+            if getToolByName(job_obj, 'virtualMachine').to_object == self and \
+                job_obj.job_status == 'Queued' and \
+                    (not next_job or next_job.modified.greaterThan(job_obj.modified)):
+                next_job = job_obj
+        return next_job
+
 
 # View class
 # The view will automatically use a similarly named template in
@@ -212,21 +226,6 @@ class SampleView(grok.View):
             if brain.getObject().virtualMachine.to_object == context:
                 joblist.append(brain)
         return joblist
-
-
-def find_next_job(vm, catalog):
-    """ helper method to find the first job to be run on current vm """
-
-    jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
-    next_job = None
-    for job in jobs:
-        job_obj = job._unrestrictedGetObject()
-
-        if getToolByName(job_obj, 'virtualMachine').to_object == vm and \
-            job_obj.job_status == 'Queued' and \
-                (not next_job or next_job.modified.greaterThan(job_obj.modified)):
-            next_job = job_obj
-    return next_job
 
 
 class getNextJob(grok.View):
@@ -281,7 +280,7 @@ class getNextJob(grok.View):
         else:
             # if the request is from authorized monitor script
             if current_vm.is_authorized_monitor(parse_result['hash'][0]):
-                next_job = find_next_job(current_vm, catalog)
+                next_job = current_vm.find_next_job(catalog)
                 if next_job:
                     current_vm.current_job = next_job
                     next_job.job_status = 'Running'
