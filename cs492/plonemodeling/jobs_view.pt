@@ -47,9 +47,15 @@
 		<td><a> - </a> </td>
 		<td><a tal:content = "python:job[1].getObject().creation">Start time</a></td>
 		<td tal:content = "python:job[1].getObject().job_status">Status</td>
+	
+
 		<td >
-			<button tal:condition="python:job[1].getObject().job_status == ('Pending' or 'Terminated' or 'Failed' or 'Finished')">Queue</button>
-			<button tal:condition="python:job[1].getObject().job_status == 'Queued'">Dequeue</button>
+			<button tal:condition="python:job[1].getObject().job_status == 'Pending'" >#Queue</button>
+			<button tal:condition="python:job[1].getObject().job_status == 'Terminated'">Queue</button>
+			<button tal:condition="python:job[1].getObject().job_status == 'Failed'">Queue</button>
+			<button tal:condition="python:job[1].getObject().job_status == 'Finished'">Queue</button>
+
+			<button tal:condition="python:job[1].getObject().job_status == 'Queued'">#Dequeue</button>
 			<button tal:condition="python:job[1].getObject().job_status == 'Running'">Terminate</button>
 		</td>
 
