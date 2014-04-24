@@ -176,6 +176,24 @@ class VirtualMachine(Container):
 
         return True
 
+    def is_authorized_monitor(self, hashkey):
+        """ Helper method to check if monitorAuthToken is valid """
+        return self.monitorAuthToken == hashkey
+
+    def find_next_job(self, catalog):
+        """ helper method to find the first job to be run on current vm """
+
+        jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
+        next_job = None
+        for job in jobs:
+            job_obj = job._unrestrictedGetObject()
+
+            if getToolByName(job_obj, 'virtualMachine').to_object == self and \
+                job_obj.job_status == 'Queued' and \
+                    (not next_job or next_job.modified.greaterThan(job_obj.modified)):
+                next_job = job_obj
+        return next_job
+
 
 # View class
 # The view will automatically use a similarly named template in
@@ -208,26 +226,6 @@ class SampleView(grok.View):
             if brain.getObject().virtualMachine.to_object == context:
                 joblist.append(brain)
         return joblist
-
-
-def is_authorized_monitor(vm, hashkey, catalog):
-    """ Helper method to check if monitorAuthToken is valid """
-    return vm.monitorAuthToken == hashkey
-
-
-def find_next_job(vm, catalog):
-    """ helper method to find the first job to be run on current vm """
-
-    jobs = catalog.unrestrictedSearchResults(portal_type='cs492.plonemodeling.job')
-    next_job = None
-    for job in jobs:
-        job_obj = job._unrestrictedGetObject()
-
-        if getToolByName(job_obj, 'virtualMachine').to_object == vm and \
-            job_obj.job_status == 'Queued' and \
-                (not next_job or next_job.modified.greaterThan(job_obj.modified)):
-            next_job = job_obj
-    return next_job
 
 
 class getNextJob(grok.View):
@@ -281,8 +279,8 @@ class getNextJob(grok.View):
             return json.dumps({'response': 'NOTOK', 'message': 'another job running'})
         else:
             # if the request is from authorized monitor script
-            if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
-                next_job = find_next_job(current_vm, catalog)
+            if current_vm.is_authorized_monitor(parse_result['hash'][0]):
+                next_job = current_vm.find_next_job(catalog)
                 if next_job:
                     current_vm.current_job = next_job
                     next_job.job_status = 'Running'
@@ -520,6 +518,6 @@ class provideStatus(grok.View):
         path = context.absolute_url_path()
         current_vm = catalog.unrestrictedTraverse(path)
 
-        if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and not current_vm.current_job:
+        if current_vm.is_authorized_monitor(parse_result['hash'][0]) and not current_vm.current_job:
             return json.dumps({'response': 'OK', 'message': current_vm.current_job.job_status})
         return '{"response": "NOTOK", "message": "noJob"}'
