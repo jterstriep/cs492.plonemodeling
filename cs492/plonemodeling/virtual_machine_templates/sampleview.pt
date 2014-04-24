@@ -68,7 +68,7 @@
 		<td tal:content = "python:job.getObject().job_status">Status</td>
 
 		<td >
-			<button tal:condition="python:job.getObject().job_status == ('Pending' or 'Terminated' or 'Failed' or 'Finished')">Queue</button>
+			<button tal:condition="python:job.getObject().job_status in ['Pending' or 'Terminated' or 'Failed' or 'Finished']">Queue</button>
 			<button tal:condition="python:job.getObject().job_status == 'Queued'">Dequeue</button>
 			<button tal:condition="python:job.getObject().job_status == 'Running'">Terminate</button>
 		</td>

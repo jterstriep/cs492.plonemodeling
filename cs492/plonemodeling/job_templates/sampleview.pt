@@ -129,7 +129,7 @@
 		<td><div><button onclick = "changeJobStatus()">Queue</button></div></td>
 	</tr>
         <tr>
-		<td>creation Time: </td>
+		<td>Start Time: </td>
 		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
         <tr>
