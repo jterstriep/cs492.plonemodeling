@@ -30,7 +30,7 @@
   <metal:content-core define-macro="content-core">
     <br>
      
-    <div id = "jobTitle" tal:content = "context/title"></div>
+    <div class = "hidden" id = "jobTitle" tal:content = "context/title"></div>
     <!-- Pending job should provide a button to queue the job-->
     <table class = "jobTable"  tal:condition="python:context.job_status == 'Pending'">
  	<tr>
@@ -73,7 +73,7 @@
 		<td><div><button onclick = "changeJobStatus()">Queue</button></div></td>
 	</tr>
         <tr>
-		<td>creation Time: </td>
+		<td>Start Time: </td>
 		<td><div tal:content="context/creation"></div></td>
 	</tr>
         <tr>
