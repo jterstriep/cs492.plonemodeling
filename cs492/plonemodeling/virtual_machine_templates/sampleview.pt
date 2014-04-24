@@ -6,29 +6,21 @@
       metal:use-macro="context/main_template/macros/master"
       i18n:domain="cs492.plonemodeling">
 
-<head>
- <metal:block metal:fill-slot="head_slot">
-  <metal:head_slot define-macro="head_slot">
 
-	 <metal:styleslot define-slot="style_slot" >
-	   <link rel="stylesheet" type="text/css" media="screen"
+<metal:styleslot fill-slot="style_slot" >
+	<link rel="stylesheet" type="text/css" media="screen"
 		  href="/++resource++cs492.plonemodeling/virtual_machine.css"/>
-	 </metal:styleslot>
+</metal:styleslot>
 
-	 <metal:javascriptslot define-slot="javascript_head_slot">
-	   <script type="text/javascript" 
+<metal:javascriptslot fill-slot="javascript_head_slot">
+	<script type="text/javascript" 
 		  src="/++resource++cs492.plonemodeling/virtual_machine.js"></script>
-	 </metal:javascriptslot>
+</metal:javascriptslot>
 
 
-  </metal:head_slot>
-</metal:block>
-
-</head>
 	 
 <body>
 <metal:main fill-slot="content-core">
-  <metal:content-core define-macro="content-core">
     <br>
     <table class = "machineTable">
 	<th>Region</th><th>Instance Type</th><th>AMI</th><th>Monitor Identifier</th><th>Status</th>
@@ -76,7 +68,6 @@
 	</tr>
 
      </table>
-  </metal:content-core>
 </metal:main>
 
 </body>
