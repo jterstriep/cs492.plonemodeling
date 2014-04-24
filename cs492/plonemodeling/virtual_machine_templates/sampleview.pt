@@ -58,19 +58,19 @@
     <br><div><b>And the jobs associated with this vm..</b></div><br>
     
     <table class = "machineTable" >
-	<th>Job</th><th>Creater</th><th>VM</th> <th> dns </th><th>Start time</th><th>Status</th><th>Action</th>
+	<th>Job</th><th>Creater</th><th>VM</th> <th> dns </th><th>Creation time</th><th>Status</th><th>Action</th>
 	<tr tal:repeat="job view/getJobsOnThisVM" height = "40px">
 		<td> <a href = "" tal:attributes = "href python:job.getURL()" tal:content = "python:job['Title']" target= "_BLANK"> Job</a></td>
                 <td tal:content = "python:job['Creator']">Creater</td>
 		<td tal:content = "context/title">Vm</td>
 		<td><a> - </a> </td>
-		<td><a tal:content = "python:job.getObject().getStartTime()">Start time</a></td>
-		<td tal:content = "python:job.getObject().getStatus()">Status</td>
+		<td><a tal:content = "python:job.getObject().creation">Creation time</a></td>
+		<td tal:content = "python:job.getObject().job_status">Status</td>
 
 		<td >
-			<select>
-			  <option value="none">Select..</option>		 
-			</select> 
+			<button tal:condition="python:job.getObject().job_status == ('Pending' or 'Terminated' or 'Failed' or 'Finished')">Queue</button>
+			<button tal:condition="python:job.getObject().job_status == 'Queued'">Dequeue</button>
+			<button tal:condition="python:job.getObject().job_status == 'Running'">Terminate</button>
 		</td>
 
 	</tr>
