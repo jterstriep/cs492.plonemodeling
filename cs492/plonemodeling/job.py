@@ -99,9 +99,9 @@ class Job(Item):
         self.end = datetime.now()
 
     def getCreationTime(self):
-        if self.creation is None:
+        if self.creation_time is None:
             return "--"
-        return str(self.creation)
+        return str(self.creation_time)
 
     def getDuration(self):
         if self.start is None or self.end is None:
@@ -137,10 +137,10 @@ class SampleView(grok.View):
 def createJob(job, event):
     logger = logging.getLogger("Plone")
 
-    ## assign time upon job creation.
-    job.creation = str(datetime.now())
-    job.start = None
-    job.end = None
+    ## assign time upon job creation_time.
+    job.creation_time = str(datetime.now())
+    job.start_time = None
+    job.end_time = None
 
     ## create authorization token
     job.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase +
@@ -154,7 +154,7 @@ def createJob(job, event):
     virtualMachine = getToolByName(job, 'virtualMachine').to_object
     context = aq_inner(job)
     result = virtualMachine.start_machine(context, job)
-    logger.info(result)
+    logger.info('Result of vm.start_machine is' + str(result))
 
 
 class changeJobStatus(grok.View):

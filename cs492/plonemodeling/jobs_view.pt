@@ -45,7 +45,7 @@
                 <td tal:content = "python:job[1]['Creator']">Creator</td>
 		<td tal:content = "python:job[1].getObject().getVMTitle()">VM</td>
 		<td><a> - </a> </td>
-		<td><a tal:content = "python:job[1].getObject().creation">Start time</a></td>
+		<td><a tal:content = "python:job[1].getObject().creation_time">Start time</a></td>
 		<td tal:content = "python:job[1].getObject().job_status">Status</td>
 		<td >
 			<button tal:condition="python:job[1].getObject().job_status == ('Pending' or 'Terminated' or 'Failed' or 'Finished')">Queue</button>
