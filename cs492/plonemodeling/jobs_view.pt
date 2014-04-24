@@ -1,48 +1,48 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      metal:use-macro="context/main_template/macros/master">
+		xmlns:metal="http://xml.zope.org/namespaces/metal"
+		xmlns:tal="http://xml.zope.org/namespaces/tal"
+		metal:use-macro="context/main_template/macros/master">
 
 
 <head>
- <metal:block metal:fill-slot="head_slot">
-  <metal:head_slot define-macro="head_slot">
-	   
-	 <metal:styleslot define-slot="style_slot" >
-	   <link rel="stylesheet" type="text/css" media="screen"
-		  href="/++resource++cs492.plonemodeling/jobs_view.css"/>
-	 </metal:styleslot>
+<metal:block metal:fill-slot="head_slot">
+	<metal:head_slot define-macro="head_slot">
+
+	<metal:styleslot define-slot="style_slot" >
+		<link rel="stylesheet" type="text/css" media="screen"
+			href="/++resource++cs492.plonemodeling/jobs_view.css"/>
+	</metal:styleslot>
 
 	<metal:javascriptslot define-slot="javascript_head_slot">
-	   <script type="text/javascript" 
-		  src="/++resource++cs492.plonemodeling/jobs_view.js"></script>
-	 </metal:javascriptslot>
+		<script type="text/javascript" 
+		src="/++resource++cs492.plonemodeling/jobs_view.js"></script>
+	</metal:javascriptslot>
 
 
-  </metal:head_slot>
+	</metal:head_slot>
 </metal:block>
 
 </head>
-	 
-    <metal:block fill-slot="content-core">
-     
-     <div class = "container-wrapper">
-     <div class = "container">
-            <h1> Job Queue Browser View</h1>
-     </div>
+
+	<metal:block fill-slot="content-core">
+
+	<div class = "container-wrapper">
+	<div class = "container">
+			<h1> Job Queue Browser View</h1>
+	</div>
 	<div class = "sortBox">Sort by: 
 		<select>
 			  <option value="start_time">Start time</option>
 			  <option value="job_status">Job Status</option>		 
 		</select>
-	 <br><br></div>
-   	<div>  
-  	 <table class = "jobTable">
+	<br><br></div>
+	<div>  
+	<table class = "jobTable">
 	<th>Index</th><th>Job</th><th>Creator</th><th>VM</th> <th> dns </th><th>Creation time</th><th>Status</th><th>Action</th>
 	<tr tal:repeat="job view/all_jobs" height = "40px">
 		<td tal:content = "python:job[0]" >--</td>
 		<td> <a href = "" tal:attributes = "href python:job[1].getURL()" tal:content="python:job[1]['Title']" target= "_BLANK" id = 'jobTitle'> Job</a></td>
-                <td tal:content = "python:job[1]['Creator']">Creator</td>
+				<td tal:content = "python:job[1]['Creator']">Creator</td>
 		<td tal:content = "python:job[1].getObject().getVMTitle()">VM</td>
 		<td><a> - </a> </td>
 		<td><a tal:content = "python:job[1].getObject().creation_time">Start time</a></td>
@@ -54,9 +54,9 @@
 		</td>
 
 		</tr>
-	 </table>
+	</table>
 	</div>
-     </div>
+	</div>
 
-    </metal:block>
+	</metal:block>
 </html>

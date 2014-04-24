@@ -1,26 +1,26 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="context/main_template/macros/master"
-      i18n:domain="cs492.plonemodeling">
+		xmlns:tal="http://xml.zope.org/namespaces/tal"
+		xmlns:metal="http://xml.zope.org/namespaces/metal"
+		xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+		lang="en"
+		metal:use-macro="context/main_template/macros/master"
+		i18n:domain="cs492.plonemodeling">
 
 <head>
- <metal:block metal:fill-slot="head_slot">
-  <metal:head_slot define-macro="head_slot">
+	<metal:block metal:fill-slot="head_slot">
+	<metal:head_slot define-macro="head_slot">
 
-	 <metal:styleslot define-slot="style_slot" >
-	   <link rel="stylesheet" type="text/css" media="screen"
-		  href="/++resource++cs492.plonemodeling/job.css"/>
-	 </metal:styleslot>
+	<metal:styleslot define-slot="style_slot" >
+		<link rel="stylesheet" type="text/css" media="screen"
+			href="/++resource++cs492.plonemodeling/job.css"/>
+	</metal:styleslot>
 
-         <metal:javascriptslot define-slot="javascript_head_slot">
-	   <script type="text/javascript" 
-		  src="/++resource++cs492.plonemodeling/job.js"></script>
-	 </metal:javascriptslot>
+		<metal:javascriptslot define-slot="javascript_head_slot">
+		<script type="text/javascript" 
+			src="/++resource++cs492.plonemodeling/job.js"></script>
+	</metal:javascriptslot>
 
-  </metal:head_slot>
+	</metal:head_slot>
 </metal:block>
 
 </head>
@@ -28,12 +28,12 @@
 <body>
 <metal:main fill-slot="content-core">
   <metal:content-core define-macro="content-core">
-    <br>
-     
-    <div class = "hidden" id = "jobTitle" tal:content = "context/title"></div>
-    <!-- Pending job should provide a button to queue the job-->
-    <table class = "jobTable"  tal:condition="python:context.job_status == 'Pending'">
- 	<tr>
+	<br>
+	 
+	<div class = "hidden" id = "jobTitle" tal:content = "context/title"></div>
+	<!-- Pending job should provide a button to queue the job-->
+	<table class = "jobTable"  tal:condition="python:context.job_status == 'Pending'">
+	<tr>
 		<td>Assigned to: </td>
 		<td><div tal:content="context/getVMTitle"></div></td>
 	</tr>
@@ -45,17 +45,17 @@
 		<td>Job status: </td>
 		<td><div id = "job_status" tal:content="context/job_status"></div></td>
 	</tr>
-        <tr>
+		<tr>
 		<td>Action: </td>
 		<td><div><button onclick = "changeJobStatus()">Queue</button></div></td>
 	</tr>
-    </table>
+	</table>
 	
 
 
-     <!-- Finished jobs provide creation time, end time, run duration and button to requeue -->
-     <table class = "jobTable"  tal:condition="python:context.job_status == 'Finished'">
-        <tr>
+	 <!-- Finished jobs provide creation time, end time, run duration and button to requeue -->
+	 <table class = "jobTable"  tal:condition="python:context.job_status == 'Finished'">
+		<tr>
 		<td>Assigned to: </td>
 		<td><div tal:content="context/getVMTitle"></div></td>
 	</tr>
@@ -72,11 +72,11 @@
 		<td>Action: </td>
 		<td><div><button onclick = "changeJobStatus()">Queue</button></div></td>
 	</tr>
-        <tr>
+		<tr>
 		<td>Start Time: </td>
 		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
-        <tr>
+		<tr>
 		<td>End Time: </td>
 		<td><div> - </div></td>
 	</tr>
@@ -84,11 +84,11 @@
 		<td>Duration: </td>
 		<td><div> - </div></td>
 	</tr>	
-    </table>
+	</table>
 
 <!-- Failed jobs provide creation time, end time, run duration and button to requeue -->
-     <table class = "jobTable"  tal:condition="python:context.job_status == 'Failed'">
-        <tr>
+	 <table class = "jobTable"  tal:condition="python:context.job_status == 'Failed'">
+		<tr>
 		<td>Assigned to: </td>
 		<td><div tal:content="context/getVMTitle"></div></td>
 	</tr>
@@ -105,12 +105,12 @@
 		<td>Action: </td>
 		<td><div><button onclick = "changeJobStatus()">Queue</button></div></td>
 	</tr>
-    </table>
+	</table>
 
 
 <!-- Terminated jobs provide creation time, end time, run duration and button to requeue -->
-     <table class = "jobTable"  tal:condition="python:context.job_status == 'Terminated'">
-        <tr>
+	 <table class = "jobTable"  tal:condition="python:context.job_status == 'Terminated'">
+		<tr>
 		<td>Assigned to: </td>
 		<td><div tal:content="context/getVMTitle"></div></td>
 	</tr>
@@ -127,11 +127,11 @@
 		<td>Action: </td>
 		<td><div><button onclick = "changeJobStatus()">Queue</button></div></td>
 	</tr>
-        <tr>
+		<tr>
 		<td>creation Time: </td>
 		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
-        <tr>
+		<tr>
 		<td>Terminate Time: </td>
 		<td><div> - </div></td>
 	</tr>
@@ -139,14 +139,14 @@
 		<td>Duration: </td>
 		<td><div> - </div></td>
 	</tr>	
-    </table>
+	</table>
 
 
 
 
-  <!-- Running jobs provide creation time, end time, run duration and button to requeue -->
-     <table class = "jobTable"  tal:condition="python:context.job_status == 'Running'">
-        <tr>
+	<!-- Running jobs provide creation time, end time, run duration and button to requeue -->
+	 <table class = "jobTable"  tal:condition="python:context.job_status == 'Running'">
+		<tr>
 		<td>Assigned to: </td>
 		<td><div tal:content="context/getVMTitle"></div></td>
 	</tr>
@@ -162,21 +162,21 @@
 		<td>Action: </td>
 		<td><div><button onclick = "changeJobStatus()">Terminate</button></div></td>
 	</tr>
-        <tr>
+		<tr>
 		<td>creation Time: </td>
 		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
-        
+		
 	<tr>
 		<td>Running Time : </td>
 		<td><div> - </div></td>
 	</tr>
 
-    </table>
+	</table>
 
  <!-- Queued jobs provide creation time, end time, run duration and button to requeue -->
-     <table class = "jobTable"  tal:condition="python:context.job_status == 'Queued'">
-        <tr>
+	 <table class = "jobTable"  tal:condition="python:context.job_status == 'Queued'">
+		<tr>
 		<td>Assigned to: </td>
 		<td><div tal:content="context/getVMTitle"></div></td>
 	</tr>
@@ -193,14 +193,13 @@
 		<td>Action: </td>
 		<td><div><button onclick="changeJobStatus()">Dequeue</button></div></td>
 	</tr>
-        <tr>
+		<tr>
 		<td>Position: </td>
 		<td><div> - </div></td>
 	</tr>
-    </table>
-  </metal:content-core>
+	</table>
+	</metal:content-core>
 </metal:main>
 
 </body>
 </html>
-

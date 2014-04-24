@@ -1,36 +1,36 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      lang="en"
-      metal:use-macro="context/main_template/macros/master"
-      i18n:domain="cs492.plonemodeling">
+		xmlns:tal="http://xml.zope.org/namespaces/tal"
+		xmlns:metal="http://xml.zope.org/namespaces/metal"
+		xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+		lang="en"
+		metal:use-macro="context/main_template/macros/master"
+		i18n:domain="cs492.plonemodeling">
 
 <head>
- <metal:block metal:fill-slot="head_slot">
-  <metal:head_slot define-macro="head_slot">
+	<metal:block metal:fill-slot="head_slot">
+	<metal:head_slot define-macro="head_slot">
 
-	 <metal:styleslot define-slot="style_slot" >
-	   <link rel="stylesheet" type="text/css" media="screen"
+	<metal:styleslot define-slot="style_slot" >
+		<link rel="stylesheet" type="text/css" media="screen"
 		  href="/++resource++cs492.plonemodeling/virtual_machine.css"/>
-	 </metal:styleslot>
+	</metal:styleslot>
 
-	 <metal:javascriptslot define-slot="javascript_head_slot">
-	   <script type="text/javascript" 
-		  src="/++resource++cs492.plonemodeling/virtual_machine.js"></script>
-	 </metal:javascriptslot>
+	<metal:javascriptslot define-slot="javascript_head_slot">
+		<script type="text/javascript" 
+			src="/++resource++cs492.plonemodeling/virtual_machine.js"></script>
+	</metal:javascriptslot>
 
 
-  </metal:head_slot>
+	</metal:head_slot>
 </metal:block>
 
 </head>
-	 
+
 <body>
 <metal:main fill-slot="content-core">
-  <metal:content-core define-macro="content-core">
-    <br>
-    <table class = "machineTable">
+	<metal:content-core define-macro="content-core">
+	<br>
+	<table class = "machineTable">
 	<th>Region</th><th>Instance Type</th><th>AMI</th><th>Monitor Identifier</th><th>Status</th>
 	<tr>
 		<td><p tal:content="context/region"></p></td>
@@ -39,12 +39,12 @@
 		<td><p tal:content="context/monitorAuthToken"></p></td>
 		<td><div id=vm_status tal:content = "context/vm_status"></div></td>
 	</tr>
-    </table><br>
+	</table><br>
 	<input type="button" value="Test Machine" onclick="testMachine();"><div id="testresults"></div>
 
 <div tal:condition = "python:context.vm_status == 'running'">
-    <br><div><b>This machine is running..</b></div><br>
-    <table class = "machineTable">
+	<br><div><b>This machine is running..</b></div><br>
+	<table class = "machineTable">
 	<th>IP Address</th><th>Time runed</th><th>Time since last pull</th><th>Action</th>
 	<tr>
 		<td>ip address</td>
@@ -52,16 +52,16 @@
 		<td>x mins</td>
 		<td><button>Terminate</button></td>
 	</tr>
-    </table>
+	</table>
 </div>
 
-    <br><div><b>And the jobs associated with this vm..</b></div><br>
-    
-    <table class = "machineTable" >
+	<br><div><b>And the jobs associated with this vm..</b></div><br>
+	
+	<table class = "machineTable" >
 	<th>Job</th><th>Creater</th><th>VM</th> <th> dns </th><th>Creation time</th><th>Status</th><th>Action</th>
 	<tr tal:repeat="job view/getJobsOnThisVM" height = "40px">
 		<td> <a href = "" tal:attributes = "href python:job.getURL()" tal:content = "python:job['Title']" target= "_BLANK"> Job</a></td>
-                <td tal:content = "python:job['Creator']">Creater</td>
+				<td tal:content = "python:job['Creator']">Creater</td>
 		<td tal:content = "context/title">Vm</td>
 		<td><a> - </a> </td>
 		<td><a tal:content = "python:job.getObject().creation_time">Creation time</a></td>
@@ -75,10 +75,9 @@
 
 	</tr>
 
-     </table>
-  </metal:content-core>
+	</table>
+	</metal:content-core>
 </metal:main>
 
 </body>
 </html>
-
