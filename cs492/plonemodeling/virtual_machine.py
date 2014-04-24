@@ -176,6 +176,10 @@ class VirtualMachine(Container):
 
         return True
 
+    def is_authorized_monitor(self, hashkey):
+        """ Helper method to check if monitorAuthToken is valid """
+        return self.monitorAuthToken == hashkey
+
 
 # View class
 # The view will automatically use a similarly named template in
@@ -208,11 +212,6 @@ class SampleView(grok.View):
             if brain.getObject().virtualMachine.to_object == context:
                 joblist.append(brain)
         return joblist
-
-
-def is_authorized_monitor(vm, hashkey, catalog):
-    """ Helper method to check if monitorAuthToken is valid """
-    return vm.monitorAuthToken == hashkey
 
 
 def find_next_job(vm, catalog):
@@ -281,7 +280,7 @@ class getNextJob(grok.View):
             return json.dumps({'response': 'NOTOK', 'message': 'another job running'})
         else:
             # if the request is from authorized monitor script
-            if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog):
+            if current_vm.is_authorized_monitor(parse_result['hash'][0]):
                 next_job = find_next_job(current_vm, catalog)
                 if next_job:
                     current_vm.current_job = next_job
@@ -520,6 +519,6 @@ class provideStatus(grok.View):
         path = context.absolute_url_path()
         current_vm = catalog.unrestrictedTraverse(path)
 
-        if is_authorized_monitor(current_vm, parse_result['hash'][0], catalog) and not current_vm.current_job:
+        if current_vm.is_authorized_monitor(parse_result['hash'][0]) and not current_vm.current_job:
             return json.dumps({'response': 'OK', 'message': current_vm.current_job.job_status})
         return '{"response": "NOTOK", "message": "noJob"}'
