@@ -83,20 +83,20 @@ class Job(Item):
         return self.job_status
 
     def getStartTime(self):
-        if self.start is None:
+        if self.start_time is None:
             return "--"
-        return str(self.start)
+        return str(self.start_time)
 
     def getEndTime(self):
-        if self.end is None:
+        if self.end_time is None:
             return "--"
-        return str(self.end)
+        return str(self.end_time)
 
     def start(self):
-        self.start = datetime.now()
+        self.start_time = datetime.now()
 
     def end(self):
-        self.end = datetime.now()
+        self.end_time = datetime.now()
 
     def getCreationTime(self):
         if self.creation_time is None:
@@ -104,9 +104,9 @@ class Job(Item):
         return str(self.creation_time)
 
     def getDuration(self):
-        if self.start is None or self.end is None:
+        if self.start_time is None or self.end_time is None:
             return "--"
-        return str(self.end - self.start)
+        return str(self.end_time - self.start_time)
 
     def getVMTitle(self):
         return self.virtualMachine.to_object.title
@@ -168,7 +168,7 @@ class changeJobStatus(grok.View):
         context = aq_inner(self.context)
         status_string = context.job_status
 
-        if status_string == 'Pending' or status_string =='Terminated' or status_string == 'Failed' or status_string =='Finished':
+        if status_string in ['Pending', 'Terminated', 'Failed', 'Finished']:
             context.job_status = 'Queued'
         if status_string == 'Running':
             context.job_status = 'Terminated'
