@@ -24,16 +24,15 @@
 </metal:block>
 
 </head>
-	 
 <body>
 <metal:main fill-slot="content-core">
-  <metal:content-core define-macro="content-core">
+	<metal:content-core define-macro="content-core">
 	<br>
-	 
 	<div class = "hidden" id = "jobTitle" tal:content = "context/title"></div>
 	<!-- Pending job should provide a button to queue the job-->
 	<table class = "jobTable"  tal:condition="python:context.job_status == 'Pending'">
 	<tr>
+
 		<td>Assigned to: </td>
 		<td><div tal:content="context/getVMTitle"></div></td>
 	</tr>
@@ -48,6 +47,7 @@
 		<tr>
 		<td>Action: </td>
 		<td><div><button onclick = "changeJobStatus()">Queue</button></div></td>
+
 	</tr>
 	</table>
 	

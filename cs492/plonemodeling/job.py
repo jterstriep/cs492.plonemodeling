@@ -115,6 +115,8 @@ class Job(Item):
         return self.id
 
 
+
+
 # View class
 # The view will automatically use a similarly named template in
 # job_templates.
