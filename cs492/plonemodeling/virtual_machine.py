@@ -21,6 +21,7 @@ import boto.ec2
 import time
 from datetime import datetime
 
+import transaction
 
 ## imports to redefine Add and View forms
 from plone.directives import dexterity
@@ -412,7 +413,6 @@ class testMachine(grok.View):
         logger.info(region)
         test_start_time = datetime.now()
         try:
-            context.vm_status = "Invalid"
             conn = boto.ec2.connect_to_region(region,
                                               aws_access_key_id=accessKey,
                                               aws_secret_access_key=secretKey
@@ -444,11 +444,15 @@ class testMachine(grok.View):
             time.sleep(10)
             status = instance.update()
 
+        transaction.commit()
+        context._p_invalidate()
+
         if not context.last_test_response_time or \
                 context.last_test_response_time < test_start_time:
+            context.vm_status = 'Invalid'
             return json.dumps({'response': 'NOTOK', 'message': 'Could not verify the vm'})
 
-        context.vm_status = "Valid"
+        context.vm_status = 'Valid'
 
         return json.dumps({'response': 'OK'})
 
