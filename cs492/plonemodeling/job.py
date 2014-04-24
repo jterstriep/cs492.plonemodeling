@@ -83,30 +83,30 @@ class Job(Item):
         return self.job_status
 
     def getStartTime(self):
-        if self.start is None:
+        if self.start_time is None:
             return "--"
-        return str(self.start)
+        return str(self.start_time)
 
     def getEndTime(self):
-        if self.end is None:
+        if self.end_time is None:
             return "--"
-        return str(self.end)
+        return str(self.end_time)
 
     def start(self):
-        self.start = datetime.now()
+        self.start_time = datetime.now()
 
     def end(self):
-        self.end = datetime.now()
+        self.end_time = datetime.now()
 
     def getCreationTime(self):
-        if self.creation is None:
+        if self.creation_time is None:
             return "--"
-        return str(self.creation)
+        return str(self.creation_time)
 
     def getDuration(self):
-        if self.start is None or self.end is None:
+        if self.start_time is None or self.end_time is None:
             return "--"
-        return str(self.end - self.start)
+        return str(self.end_time - self.start_time)
 
     def getVMTitle(self):
         return self.virtualMachine.to_object.title
@@ -139,10 +139,10 @@ class SampleView(grok.View):
 def createJob(job, event):
     logger = logging.getLogger("Plone")
 
-    ## assign time upon job creation.
-    job.creation = str(datetime.now())
-    job.start = None
-    job.end = None
+    ## assign time upon job creation_time.
+    job.creation_time = str(datetime.now())
+    job.start_time = None
+    job.end_time = None
 
     ## create authorization token
     job.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase +
@@ -156,7 +156,7 @@ def createJob(job, event):
     virtualMachine = getToolByName(job, 'virtualMachine').to_object
     context = aq_inner(job)
     result = virtualMachine.start_machine(context, job)
-    logger.info(result)
+    logger.info('Result of vm.start_machine is' + str(result))
 
 
 class changeJobStatus(grok.View):
@@ -170,7 +170,7 @@ class changeJobStatus(grok.View):
         context = aq_inner(self.context)
         status_string = context.job_status
 
-        if status_string == 'Pending' or status_string =='Terminated' or status_string == 'Failed' or status_string =='Finished':
+        if status_string in ['Pending', 'Terminated', 'Failed', 'Finished']:
             context.job_status = 'Queued'
         if status_string == 'Running':
             context.job_status = 'Terminated'

@@ -39,7 +39,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="context/creation"></div></td>
+		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -62,7 +62,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="context/creation"></div></td>
+		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -75,7 +75,7 @@
 	</tr>
         <tr>
 		<td>Start Time: </td>
-		<td><div tal:content="context/creation"></div></td>
+		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
         <tr>
 		<td>End Time: </td>
@@ -95,7 +95,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="context/creation"></div></td>
+		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -117,7 +117,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="context/creation"></div></td>
+		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -130,7 +130,7 @@
 	</tr>
         <tr>
 		<td>creation Time: </td>
-		<td><div tal:content="context/creation"></div></td>
+		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
         <tr>
 		<td>Terminate Time: </td>
@@ -152,7 +152,7 @@
 		<td><div tal:content="context/getVMTitle"></div></td>
 	</tr>
 	<tr>
-		<td><div tal:content="context/creation"></div></td>
+		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -165,7 +165,7 @@
 	</tr>
         <tr>
 		<td>creation Time: </td>
-		<td><div tal:content="context/creation"></div></td>
+		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
         
 	<tr>
@@ -183,7 +183,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="context/creation"></div></td>
+		<td><div tal:content="context/creation_time"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
