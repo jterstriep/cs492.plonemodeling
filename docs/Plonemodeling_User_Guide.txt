@@ -1,0 +1,16 @@
+Instructions for installing and configuring Plonemodeling add-on
+
+Installing Plonemodeling
+	Install boto
+	Add AWS credentials to ~/.boto
+	Enable support for Dexterity Content Types in Site Setup
+	Under eggs in buildout.cfg, add the line 'cs492.plonemodeling'
+	Add <URL> to find-links
+	Run buildout
+
+Once Plonemodeling is installed, all that is left to do is to create Virtual Machine and Job Content Types.
+
+A Virtual Machine should be created first, as a Job needs a Virtual Machine associated to it. Creating Virtual Machines and Jobs is simply a matter of filling out their respect forms.
+	
+To access a view displaying all the jobs that currently exist append @@jobs_view to the URL of the Plone site's root page.
+

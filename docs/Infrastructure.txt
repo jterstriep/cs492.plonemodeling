@@ -1,0 +1,23 @@
+﻿Description of program infrastructure for Plonemodeling add-on
+
+---- VM boot process ----
+
+When a job is created a random monitor identifier is created and assigned to the job. If the job's status is not Queued, it is set to Pending. The module attempts to connect to the correct EC2 region using the provided AWS keys and, if successful gets a reservation object for the specified VM and passes the monitor script, along with the monitor identifier, to the VM.
+
+---- Interaction between Plone and VM ----
+
+Interaction between Plone and the VM is secured by the use of an Monitor Identifier sent to the monitor when the VM instance is created.
+
+The VM interacts with Plone by making requests of services within the Plone Module. 
+The provided services are:
+
+get_next_job: When a job ends, the monitor uses this service to get the next job from Plone.
+
+provide_status: This services checks to see if a change has been made to the status of the current job from Plone.
+
+update_job_status: If a job finishes successfully or fails, the Monitor uses this service to inform Plone of the change.
+
+---- Interaction between Plone and the remote model ----
+
+Interaction between Plone and the remote model is currently mediated by the Monitor.
+
