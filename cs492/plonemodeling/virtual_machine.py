@@ -135,8 +135,8 @@ class VirtualMachine(Container):
     def start_machine(self, job_context, job):
         logger = logging.getLogger('Plone')
         logger.info('start_machine method called')
-        #if self.running_vm_id:
-            #return False
+        if self.running_vm_id:
+            return False
 
         ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/"
         vm_context = aq_inner(self)

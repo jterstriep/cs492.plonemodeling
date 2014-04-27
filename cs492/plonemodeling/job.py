@@ -76,35 +76,25 @@ class Job(Item):
 
     # Add your class methods and properties here
 
+    start_time = "--"
+    end_time = "--"
+    creation_time = "--"
+    queued_time = "--"
+
     def getTitle(self):
         return self.title
 
     def getStatus(self):
         return self.job_status
 
-    def getStartTime(self):
-        if self.start_time is None:
-            return "--"
-        return str(self.start_time)
-
-    def getEndTime(self):
-        if self.end_time is None:
-            return "--"
-        return str(self.end_time)
-
-    def start(self):
+    def startNow(self):
         self.start_time = datetime.now()
 
-    def end(self):
+    def endNow(self):
         self.end_time = datetime.now()
 
-    def getCreationTime(self):
-        if self.creation_time is None:
-            return "--"
-        return str(self.creation_time)
-
     def getDuration(self):
-        if self.start_time is None or self.end_time is None:
+        if self.start_time is "--" or self.end_time is "--":
             return "--"
         return str(self.end_time - self.start_time)
 
@@ -143,9 +133,7 @@ def createJob(job, event):
     logger = logging.getLogger("Plone")
 
     ## assign time upon job creation_time.
-    job.creation_time = str(datetime.now())
-    job.start_time = None
-    job.end_time = None
+    job.creation_time = datetime.now()
 
     ## create authorization token
     job.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase +
@@ -156,6 +144,7 @@ def createJob(job, event):
         job.job_status = "Pending"
         return
 
+    job.queued_time = datetime.now()
     virtualMachine = getToolByName(job, 'virtualMachine').to_object
     context = aq_inner(job)
     result = virtualMachine.start_machine(context, job)
@@ -184,7 +173,12 @@ class changeJobStatus(grok.View):
 
 
 @grok.subscribe(IJob, IObjectModifiedEvent)
-@grok.subscribe(IJob, IObjectRemovedEvent)
-@grok.subscribe(IJob, IObjectMovedEvent)
 def job_changed(job, event):
+    if job.job_status == "Queued" and job.queued_time == "--":
+        virtualMachine = getToolByName(job, 'virtualMachine').to_object
+        context = aq_inner(job)
+        virtualMachine.start_machine(context, job)
+        job.queued_time = datetime.now()
+    else:
+        job.queued_time = "--"
     return
