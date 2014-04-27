@@ -163,6 +163,9 @@ class changeJobStatus(grok.View):
         status_string = context.job_status
         if status_string in ['Pending', 'Terminated', 'Failed', 'Finished']:
             context.job_status = 'Queued'
+            virtualMachine = getToolByName(context, 'virtualMachine').to_object
+            virtualMachine.start_machine(context, self)
+            context.queued_time = datetime.now()
         if status_string == 'Running':
             context.job_status = 'Terminated'
         if status_string == 'Queued':
