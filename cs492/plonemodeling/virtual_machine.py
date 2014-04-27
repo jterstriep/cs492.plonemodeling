@@ -341,7 +341,7 @@ class updateJobStatus(grok.View):
             current_vm.lastAccessTime = str(datetime.now())
             if job_obj:
                 job_obj.job_status = new_status[0]
-                if parse_result['reason']:
+                if 'reason' in parse_result:
                     job_obj.error = parse_result['reason'][0]
                 job_obj.endNow()
                 # remove the object from the machine
