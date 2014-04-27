@@ -27,8 +27,8 @@
     <!-- Pending job should provide a button to queue the job-->
     <table class = "jobTable"  tal:condition="python:context.job_status == 'Pending'">
  	<tr>
-		<td>Assigned to: </td>
-		<td><div tal:content="context/getVMTitle"></div></td>
+		<td>Virtual Machine: </td>
+		<td><a tal:attributes = "href python:context.getVMUrl()"><div tal:content="context/getVMTitle"></div></a></td>
 	</tr>
 	<tr>
 		<td>Creation time: </td>
@@ -50,8 +50,8 @@
 	 <!-- Finished jobs provide creation time, end time, run duration and button to requeue -->
 	 <table class = "jobTable"  tal:condition="python:context.job_status == 'Finished'">
 		<tr>
-		<td>Assigned to: </td>
-		<td><div tal:content="context/getVMTitle"></div></td>
+		<td>Virtual Machine: </td>
+		<td><a tal:attributes = "href python:context.getVMUrl()"><div tal:content="context/getVMTitle"></div></a></td>
 	</tr>
 	<tr>
 		<td>Creation time: </td>
@@ -83,8 +83,8 @@
 <!-- Failed jobs provide creation time, end time, run duration and button to requeue -->
 	 <table class = "jobTable"  tal:condition="python:context.job_status == 'Failed'">
 		<tr>
-		<td>Assigned to: </td>
-		<td><div tal:content="context/getVMTitle"></div></td>
+		<td>Virtual Machine: </td>
+		<td><a tal:attributes = "href python:context.getVMUrl()"><div tal:content="context/getVMTitle"></div></a></td>
 	</tr>
 	<tr>
 		<td>Creation time: </td>
@@ -105,8 +105,8 @@
 <!-- Terminated jobs provide creation time, end time, run duration and button to requeue -->
 	 <table class = "jobTable"  tal:condition="python:context.job_status == 'Terminated'">
 		<tr>
-		<td>Assigned to: </td>
-		<td><div tal:content="context/getVMTitle"></div></td>
+		<td>Virtual Machine: </td>
+		<td><a tal:attributes = "href python:context.getVMUrl()"><div tal:content="context/getVMTitle"></div></a></td>
 	</tr>
 	<tr>
 		<td>Creation time: </td>
@@ -141,8 +141,8 @@
 	<!-- Running jobs provide creation time, end time, run duration and button to requeue -->
 	 <table class = "jobTable"  tal:condition="python:context.job_status == 'Running'">
 		<tr>
-		<td>Assigned to: </td>
-		<td><div tal:content="context/getVMTitle"></div></td>
+		<td>Virtual Machine: </td>
+		<td><a tal:attributes = "href python:context.getVMUrl()"><div tal:content="context/getVMTitle"></div></a></td>
 	</tr>
 	<tr>
 		<td><div tal:content="context/creation_time"></div></td>
@@ -171,8 +171,8 @@
  <!-- Queued jobs provide creation time, end time, run duration and button to requeue -->
 	 <table class = "jobTable"  tal:condition="python:context.job_status == 'Queued'">
 		<tr>
-		<td>Assigned to: </td>
-		<td><div tal:content="context/getVMTitle"></div></td>
+		<td>Virtual Machine: </td>
+		<td><a tal:attributes = "href python:context.getVMUrl()"><div tal:content="context/getVMTitle"></div></a></td>
 	</tr>
 	<tr>
 		<td>Creation time: </td>

@@ -111,6 +111,9 @@ class Job(Item):
     def getVMTitle(self):
         return self.virtualMachine.to_object.title
 
+    def getVMUrl(self):
+	return self.virtualMachine.to_object.absolute_url_path()
+
     def getId(self):
         return self.id
 
