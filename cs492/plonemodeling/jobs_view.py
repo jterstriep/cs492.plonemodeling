@@ -73,10 +73,7 @@ class JobsView(BrowserView):
 	self.all_jobs = getattr(self.context, 'all_jobs', all_jobs)
 	return self.template()
   
-    def test(self):
-	print "where am i"
-
-    
+ 
 
 
       

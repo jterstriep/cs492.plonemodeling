@@ -107,8 +107,7 @@ class Job(Item):
     def getId(self):
         return self.id
 
-    def test(self):
-	print "in test"
+   
 
 # View class
 # The view will automatically use a similarly named template in
