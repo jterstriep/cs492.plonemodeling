@@ -178,4 +178,6 @@ def job_changed(job, event):
         job.queued_time = datetime.now()
     else:
         job.queued_time = "--"
+    logger = logging.getLogger("Plone")
+    logger.info("modified")
     return
