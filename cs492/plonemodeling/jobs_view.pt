@@ -32,12 +32,12 @@
 	<br><br></div>
 	<div>  
 	<table class = "jobTable">
-	<th>Index</th><th>Job</th><th>Creator</th><th>VM</th> <th> dns </th><th>Creation time</th><th>Status</th><th>Action</th>
+	<th>Index</th><th>Job</th><th>Owner</th><th>VM</th> <th> dns </th><th>Creation time</th><th>Status</th><th>Action</th>
 	<tr tal:repeat="job view/all_jobs" height = "40px">
 		<td tal:content = "python:job[0]" >--</td>
 		<td> <a href = "" tal:attributes = "href python:job[1].getURL()" tal:content="python:job[1]['Title']" target= "_BLANK" id = 'jobTitle'> Job</a></td>
-				<td tal:content = "python:job[1]['Creator']">Creator</td>
-		<td tal:content = "python:job[1].getObject().getVMTitle()">VM</td>
+				<td tal:content = "python:job[1]['Creator']">Owner</td>
+		<td ><a tal:attributes = "href python:job[1].getObject().getVMUrl()" tal:content = "python:job[1].getObject().getVMTitle()">VM</a></td>
 		<td><a> - </a> </td>
 		<td><a tal:content = "python:job[1].getObject().creation_time">Start time</a></td>
 		<td tal:content = "python:job[1].getObject().job_status">Status</td>
