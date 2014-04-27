@@ -96,7 +96,7 @@ class Job(Item):
     def getDuration(self):
         if self.start_time is "--" or self.end_time is "--":
             return "--"
-        return str(self.end_time - self.start_time)
+        return (self.end_time - self.start_time)
 
     def getVMTitle(self):
         return self.virtualMachine.to_object.title
