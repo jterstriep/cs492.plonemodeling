@@ -3,7 +3,7 @@ from five import grok
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 from plone.dexterity.content import Item
-from plone.directives import form
+from plone.supermodel import model
 from plone.namedfile.interfaces import IImageScaleTraversable
 from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_inner
@@ -42,7 +42,7 @@ instance_type_list = SimpleVocabulary(
 
 
 # Interface class used to define content-type schema.
-class IVirtualMachine(form.Schema, IImageScaleTraversable):
+class IVirtualMachine(model.Schema, IImageScaleTraversable):
     """
     Specification of an EC2 instance
     """
