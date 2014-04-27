@@ -102,15 +102,13 @@ class Job(Item):
         return self.virtualMachine.to_object.title
 
     def getVMUrl(self):
-	return self.virtualMachine.to_object.absolute_url_path()
+        return self.virtualMachine.to_object.absolute_url_path()
 
     def getId(self):
         return self.id
 
     def test(self):
 	print "in test"
-
-
 
 # View class
 # The view will automatically use a similarly named template in
@@ -182,4 +180,6 @@ def job_changed(job, event):
         job.queued_time = datetime.now()
     else:
         job.queued_time = "--"
+    logger = logging.getLogger("Plone")
+    logger.info("modified")
     return

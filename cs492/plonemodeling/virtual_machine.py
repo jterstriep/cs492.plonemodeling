@@ -2,7 +2,7 @@ from five import grok
 
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
-from plone.dexterity.content import Container
+from plone.dexterity.content import Item
 from plone.directives import form
 from plone.namedfile.interfaces import IImageScaleTraversable
 from Products.CMFCore.utils import getToolByName
@@ -95,7 +95,7 @@ class IVirtualMachine(form.Schema, IImageScaleTraversable):
 # be instances of this class. Use this class to add content-type specific
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
-class VirtualMachine(Container):
+class VirtualMachine(Item):
     grok.implements(IVirtualMachine)
 
     # Add your class methods and properties here
@@ -291,6 +291,7 @@ class getNextJob(grok.View):
                         'start_string': next_job.startString,
                         })
                 else:
+                    current_vm.running_vm_id = ''
                     return json.dumps({'response': 'NOTOK', 'message': 'no jobs to be run'})
             else:
                 return json.dumps({'response': 'NOTOK', 'message': 'invalid hash'})
@@ -319,12 +320,13 @@ class updateJobStatus(grok.View):
         if not 'hash' in parse_result:
             return '{"response": "fail", "message": "noHash"}'
         new_status = parse_result.get('new_status', None)
+        logger.info("New status is " + new_status[0])
         if not new_status:
             return '{"response": "fail", "message": "new status missing"}'
         else:
             # currently support only two kinds of status updates
             # failed stands for script which returned an error when running
-            if new_status not in ['Finished', 'Failed']:
+            if new_status[0] not in ['Finished', 'Failed']:
                 return '{"response": "fail", "message": "Invalid new status"}'
 
         context = aq_inner(self.context)
@@ -338,8 +340,8 @@ class updateJobStatus(grok.View):
         if current_vm.monitorAuthToken == parse_result['hash'][0]:
             current_vm.lastAccessTime = str(datetime.now())
             if job_obj:
-                job_obj.job_status = new_status
-                job_obj.end()
+                job_obj.job_status = new_status[0]
+                job_obj.endNow()
                 # remove the object from the machine
                 current_vm.current_job = None
                 return '{"response": "success", "message": "status updated"}'
