@@ -24,6 +24,7 @@
     <br>
      
     <div class = "hidden" id = "jobID" tal:content = "context/id"></div>
+    <div class= "hidden" id = "jobURL" tal:content = context/absolute_url_path></div>
     <!-- Pending job should provide a button to queue the job-->
     <table class = "jobTable"  tal:condition="python:context.job_status == 'Pending'">
  	<tr>

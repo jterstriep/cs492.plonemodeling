@@ -1,7 +1,7 @@
 function changeJobStatus(){
-	var jobID = document.getElementById("jobID").innerHTML;
+	var jobURL = document.getElementById("jobURL").innerHTML;
 
-	$.getJSON(jobID + "/change_jobstatus", function(json) {
+	$.getJSON(jobURL + "/change_jobstatus", function(json) {
 		document.getElementById("job_status").innerHTML = json.response;
 		location.reload();
 	})	

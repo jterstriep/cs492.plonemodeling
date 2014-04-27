@@ -107,6 +107,8 @@ class Job(Item):
     def getId(self):
         return self.id
 
+    def test(self):
+	print "in test"
 
 
 
@@ -161,7 +163,6 @@ class changeJobStatus(grok.View):
         self.request.response.setHeader('Content-type', 'application/json')
         context = aq_inner(self.context)
         status_string = context.job_status
-
         if status_string in ['Pending', 'Terminated', 'Failed', 'Finished']:
             context.job_status = 'Queued'
         if status_string == 'Running':

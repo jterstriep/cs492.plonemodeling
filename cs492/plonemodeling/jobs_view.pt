@@ -40,15 +40,15 @@
 		<td ><a tal:attributes = "href python:job[1].getObject().getVMUrl()" tal:content = "python:job[1].getObject().getVMTitle()">VM</a></td>
 		<td><a> - </a> </td>
 		<td><a tal:content = "python:job[1].getObject().creation_time">Start time</a></td>
-		<td tal:content = "python:job[1].getObject().job_status">Status</td>
+		<td tal:attributes = "id python:job[1].getObject().getId()+'_jobstatus'" tal:content = "python:job[1].getObject().job_status">Status</td>
 	
 
 		<td >
-			<button tal:condition="python:job[1].getObject().job_status in ['Pending', 'Terminated', 'Failed', 'Finished']" >Queue</button>
+			<button tal:condition="python:job[1].getObject().job_status in ['Pending', 'Terminated', 'Failed', 'Finished']" tal:attributes = "onclick python:'changeJobStatus(\''+job[1].getURL()+'\')'">Queue</button>
 			
 
-			<button tal:condition="python:job[1].getObject().job_status == 'Queued'">Dequeue</button>
-			<button tal:condition="python:job[1].getObject().job_status == 'Running'">Terminate</button>
+			<button tal:condition="python:job[1].getObject().job_status == 'Queued'" tal:attributes = "onclick python:'changeJobStatus(\''+job[1].getURL()+'\')'">Dequeue</button>
+			<button tal:condition="python:job[1].getObject().job_status == 'Running'" tal:attributes = "onclick python:'changeJobStatus(\''+job[1].getURL()+'\')'">Terminate</button>
 		</td>
 
 		</tr>
