@@ -11,6 +11,7 @@ from cs492.plonemodeling import MessageFactory as _
 import json
 import logging
 from urlparse import parse_qs, urljoin
+import base64
 
 import socket
 import string
@@ -342,8 +343,9 @@ class updateJobStatus(grok.View):
             if job_obj:
                 job_obj.job_status = new_status[0]
                 if 'reason' in parse_result:
-                    logger.info('The job failed because: ' + str(parse_result['reason'][0]))
-                    job_obj.failure_message = parse_result['reason'][0]
+                    decoded_reason = base64.b64decode(parse_result['reason'][0])
+                    logger.info('The job failed because: ' + decoded_reason)
+                    job_obj.failure_message = decoded_reason
                 job_obj.endNow()
                 # remove the object from the machine
                 current_vm.current_job = None
