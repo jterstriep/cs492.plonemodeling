@@ -8,12 +8,12 @@
 
 	<metal:styleslot fill-slot="style_slot" >
 		<link rel="stylesheet" type="text/css" media="screen"
-			href="/++resource++cs492.plonemodeling/jobs_view.css"/>
+			href="++resource++cs492.plonemodeling/jobs_view.css"/>
 	</metal:styleslot>
 
 	<metal:javascriptslot fill-slot="javascript_head_slot">
 		<script type="text/javascript" 
-		src="/++resource++cs492.plonemodeling/jobs_view.js"></script>
+		src="++resource++cs492.plonemodeling/jobs_view.js"></script>
 	</metal:javascriptslot>
 
 </head>
@@ -39,7 +39,7 @@
 				<td tal:content = "python:job[1]['Creator']">Owner</td>
 		<td ><a tal:attributes = "href python:job[1].getObject().getVMUrl()" tal:content = "python:job[1].getObject().getVMTitle()">VM</a></td>
 		<td><a> - </a> </td>
-		<td><a tal:content = "python:job[1].getObject().creation_time">Start time</a></td>
+		<td><a tal:content = "python:job[1].getObject().creation_time">Creation time</a></td>
 		<td tal:attributes = "id python:job[1].getObject().getId()+'_jobstatus'" tal:content = "python:job[1].getObject().job_status">Status</td>
 	
 

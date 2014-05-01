@@ -10,12 +10,12 @@
 
 <metal:styleslot fill-slot="style_slot" >
 	   <link rel="stylesheet" type="text/css" media="screen"
-		  href="/++resource++cs492.plonemodeling/job.css"/>
+		  href="++resource++cs492.plonemodeling/job.css"/>
 </metal:styleslot>
 
 <metal:javascriptslot fill-slot="javascript_head_slot">
 	   <script type="text/javascript" 
-		  src="/++resource++cs492.plonemodeling/job.js"></script>
+		  src="++resource++cs492.plonemodeling/job.js"></script>
 </metal:javascriptslot>
 
 </head>
