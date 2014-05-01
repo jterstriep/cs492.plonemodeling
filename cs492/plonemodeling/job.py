@@ -93,10 +93,25 @@ class Job(Item):
     def endNow(self):
         self.end_time = datetime.now()
 
+    def getCreationTime(self):
+        if self.creation_time == "--":
+           return self.creation_time
+        return self.creation_time.strftime('%Y-%m-%d %H:%M:%S')
+
+    def getStartTime(self):
+        if self.start_time == "--":
+           return self.start_time
+        return self.start_time.strftime('%Y-%m-%d %H:%M:%S')
+
+    def getEndTime(self):
+        if self.end_time == "--":
+           return self.end_time
+        return self.end_time.strftime('%Y-%m-%d %H:%M:%S')
+
     def getDuration(self):
-        if self.start_time is "--" or self.end_time is "--":
+        if self.start_time == "--" or self.end_time == "--":
             return "--"
-        return (self.end_time - self.start_time)
+        return (self.end_time - self.start_time).strftime('%Y-%m-%d %H:%M:%S')
 
     def getVMTitle(self):
         return self.virtualMachine.to_object.title

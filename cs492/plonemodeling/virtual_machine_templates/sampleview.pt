@@ -55,8 +55,8 @@
 			<td tal:content = "python:job['Creator']">Owner</td>
 
 		<td><a> - </a> </td>
-		<td><a tal:content = "python:job.getObject().creation_time">Creation time</a></td>
-		<td><a tal:content = "python:job.getObject().end_time">End time</a></td>
+		<td><a tal:content = "python:job.getObject().getCreationTime()">Creation time</a></td>
+		<td><a tal:content = "python:job.getObject().getEndTime()">End time</a></td>
 		<td tal:content = "python:job.getObject().job_status">Status</td>
 
 		<td >
