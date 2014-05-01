@@ -152,10 +152,6 @@ def createJob(job, event):
     ## assign time upon job creation_time.
     job.creation_time = datetime.now()
 
-    ## create authorization token
-    job.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase +
-                                   string.digits) for _ in range(AUTH_TOKEN_LENGTH))
-
     ## Do not queue the job if status is not Queued
     if job.job_status != "Queued":
         job.job_status = "Pending"
@@ -165,7 +161,7 @@ def createJob(job, event):
     virtualMachine = getToolByName(job, 'virtualMachine').to_object
     context = aq_inner(job)
     result = virtualMachine.start_machine(context, job)
-    logger.info('Result of vm.start_machine is' + str(result))
+    logger.info('Result of vm.start_machine is: ' + str(result))
 
 
 class changeJobStatus(grok.View):
