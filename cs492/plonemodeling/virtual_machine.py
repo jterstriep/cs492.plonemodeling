@@ -284,8 +284,7 @@ class getNextJob(grok.View):
                 if next_job:
                     current_vm.current_job = next_job
                     next_job.job_status = 'Running'
-                    #next_job.start()
-
+                    next_job.startNow()
                     return json.dumps({
                         'response': 'OK',
                         'start_string': next_job.startString,
@@ -342,7 +341,7 @@ class updateJobStatus(grok.View):
             if job_obj:
                 job_obj.job_status = new_status[0]
                 if 'reason' in parse_result:
-                    job_obj.error = parse_result['reason'][0]
+                    job_obj.failure_message = parse_result['reason'][0]
                 job_obj.endNow()
                 # remove the object from the machine
                 current_vm.current_job = None

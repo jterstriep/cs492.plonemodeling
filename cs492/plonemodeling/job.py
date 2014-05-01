@@ -80,6 +80,7 @@ class Job(Item):
     end_time = "--"
     creation_time = "--"
     queued_time = "--"
+    failure_message = ""
 
     def getTitle(self):
         return self.title
@@ -109,9 +110,11 @@ class Job(Item):
         return self.end_time.strftime('%Y-%m-%d %H:%M:%S')
 
     def getDuration(self):
-        if self.start_time == "--" or self.end_time == "--":
+        if self.start_time == "--" and self.end_time == "--":
             return "--"
-        return (self.end_time - self.start_time).strftime('%Y-%m-%d %H:%M:%S')
+        elif self.end_time == "--":
+            return str(datetime.now() - self.start_time)
+        return str(self.end_time - self.start_time)
 
     def getVMTitle(self):
         return self.virtualMachine.to_object.title
