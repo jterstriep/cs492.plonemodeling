@@ -10,14 +10,11 @@ from z3c.relationfield.schema import RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
 from Acquisition import aq_inner
 
-from zope.lifecycleevent.interfaces import IObjectAddedEvent, IObjectMovedEvent, IObjectRemovedEvent, IObjectModifiedEvent
+from zope.lifecycleevent.interfaces import IObjectAddedEvent, IObjectModifiedEvent
 from Products.CMFCore.utils import getToolByName
 
 from plone.supermodel import model
 from cs492.plonemodeling import MessageFactory as _
-
-import string
-import random
 
 from cs492.plonemodeling.virtual_machine import IVirtualMachine
 import json
@@ -96,17 +93,17 @@ class Job(Item):
 
     def getCreationTime(self):
         if self.creation_time == "--":
-           return self.creation_time
+            return self.creation_time
         return self.creation_time.strftime('%Y-%m-%d %H:%M:%S')
 
     def getStartTime(self):
         if self.start_time == "--":
-           return self.start_time
+            return self.start_time
         return self.start_time.strftime('%Y-%m-%d %H:%M:%S')
 
     def getEndTime(self):
         if self.end_time == "--":
-           return self.end_time
+            return self.end_time
         return self.end_time.strftime('%Y-%m-%d %H:%M:%S')
 
     def getDuration(self):
@@ -125,7 +122,6 @@ class Job(Item):
     def getId(self):
         return self.id
 
-   
 
 # View class
 # The view will automatically use a similarly named template in
