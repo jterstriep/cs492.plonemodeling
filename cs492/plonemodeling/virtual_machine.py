@@ -136,6 +136,7 @@ class VirtualMachine(Item):
         logger = logging.getLogger('Plone')
         logger.info('start_machine method called')
         if self.running_vm_id:
+            logger.info('A vm is already running, not starting a new vm: ' + str(self.running_vm_id))
             return False
 
         ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/"
@@ -341,6 +342,7 @@ class updateJobStatus(grok.View):
             if job_obj:
                 job_obj.job_status = new_status[0]
                 if 'reason' in parse_result:
+                    logger.info('The job failed because: ' + str(parse_result['reason'][0]))
                     job_obj.failure_message = parse_result['reason'][0]
                 job_obj.endNow()
                 # remove the object from the machine
