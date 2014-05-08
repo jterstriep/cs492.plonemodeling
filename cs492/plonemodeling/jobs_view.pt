@@ -8,12 +8,12 @@
 
 	<metal:styleslot fill-slot="style_slot" >
 		<link rel="stylesheet" type="text/css" media="screen"
-			href="/++resource++cs492.plonemodeling/jobs_view.css"/>
+			href="++resource++cs492.plonemodeling/jobs_view.css"/>
 	</metal:styleslot>
 
 	<metal:javascriptslot fill-slot="javascript_head_slot">
 		<script type="text/javascript" 
-		src="/++resource++cs492.plonemodeling/jobs_view.js"></script>
+		src="++resource++cs492.plonemodeling/jobs_view.js"></script>
 	</metal:javascriptslot>
 
 </head>

@@ -185,7 +185,7 @@ class changeJobStatus(grok.View):
 
 @grok.subscribe(IJob, IObjectModifiedEvent)
 def job_changed(job, event):
-    if job.job_status == "Queued" and job.queued_time == "--":
+    if job.job_status == "Queued":
         virtualMachine = getToolByName(job, 'virtualMachine').to_object
         context = aq_inner(job)
         virtualMachine.start_machine(context, job)
