@@ -39,7 +39,11 @@
 				<td tal:content = "python:job[1]['Creator']">Owner</td>
 		<td ><a tal:attributes = "href python:job[1].getObject().getVMUrl()" tal:content = "python:job[1].getObject().getVMTitle()">VM</a></td>
 		<td><a> - </a> </td>
+<<<<<<< HEAD
+		<td><a tal:content = "python:job[1].getObject().creation_time">Creation time</a></td>
+=======
 		<td><a tal:content = "python:job[1].getObject().getCreationTime()">Creation time</a></td>
+>>>>>>> 2bcff384d66a2a7904fa5e9fdab27950cc760bed
 		<td tal:attributes = "id python:job[1].getObject().getId()+'_jobstatus'" tal:content = "python:job[1].getObject().job_status">Status</td>
 	
 
