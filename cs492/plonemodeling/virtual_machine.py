@@ -124,19 +124,32 @@ class VirtualMachine(Item):
         except:
             return ''
 
-    def get_monitor_key(self):
+    # a new key is generated for each new instance of AWS virtual machine
+    def gen_monitor_key(self):
         AUTH_TOKEN_LENGTH = 10
-        if self.monitorAuthToken:
-            return self.monitorAuthToken
+        self.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase
+                                        + string.digits) for _ in range(AUTH_TOKEN_LENGTH))
+        return self.monitorAuthToken
+
+    def is_vm_running(self, target_vm_id=None):
+        target_vm_id = target_vm_id or self.running_vm_id
+        if target_vm_id:
+            conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
+                                              aws_secret_access_key=self.secretKey)
+            reservations = conn.get_all_reservations()
+            for reservation in reservations:
+                instances = reservation.instances
+                for vm in instances:
+                    if vm.id == target_vm_id:
+                        return True
+            return False
         else:
-            self.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase
-                                            + string.digits) for _ in range(AUTH_TOKEN_LENGTH))
-            return self.monitorAuthToken
+            return False
 
     def start_machine(self, job_context, job):
         logger = logging.getLogger('Plone')
         logger.info('start_machine method called')
-        if self.running_vm_id:
+        if self.is_vm_running():
             logger.info('A vm is already running, not starting a new vm: ' + str(self.running_vm_id))
             return False
 
@@ -146,7 +159,7 @@ class VirtualMachine(Item):
         logger.info('vm path is' + str(vm_path))
 
         try:
-            user_data_script = scripts.MONITOR_SCRIPT + 'monitor_setup ' + vm_path + ' ' + self.get_monitor_key()
+            user_data_script = scripts.MONITOR_SCRIPT + 'monitor_setup ' + vm_path + ' ' + self.gen_monitor_key()
 
             logger.info('Credentials are ' + self.accessKey + self.secretKey)
             conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
