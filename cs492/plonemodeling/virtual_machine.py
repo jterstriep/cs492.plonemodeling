@@ -135,15 +135,18 @@ class VirtualMachine(Item):
 
     def is_vm_running(self, target_vm_id=None):
         target_vm_id = target_vm_id | self.running_vm_id
-        conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
-                                          aws_secret_access_key=self.secretKey)
-        reservations = conn.get_all_reservations()
-        for reservation in reservations:
-            instances = reservation.instances
-            for vm in instances:
-                if vm.id == target_vm_id:
-                    return True
-        return False
+        if target_vm_id:
+            conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
+                                              aws_secret_access_key=self.secretKey)
+            reservations = conn.get_all_reservations()
+            for reservation in reservations:
+                instances = reservation.instances
+                for vm in instances:
+                    if vm.id == target_vm_id:
+                        return True
+            return False
+        else:
+            return False
 
     def start_machine(self, job_context, job):
         logger = logging.getLogger('Plone')
