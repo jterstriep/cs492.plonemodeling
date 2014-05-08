@@ -10,14 +10,11 @@ from z3c.relationfield.schema import RelationChoice
 from plone.formwidget.contenttree import ObjPathSourceBinder
 from Acquisition import aq_inner
 
-from zope.lifecycleevent.interfaces import IObjectAddedEvent, IObjectMovedEvent, IObjectRemovedEvent, IObjectModifiedEvent
+from zope.lifecycleevent.interfaces import IObjectAddedEvent, IObjectModifiedEvent
 from Products.CMFCore.utils import getToolByName
 
 from plone.supermodel import model
 from cs492.plonemodeling import MessageFactory as _
-
-import string
-import random
 
 from cs492.plonemodeling.virtual_machine import IVirtualMachine
 import json
@@ -80,6 +77,7 @@ class Job(Item):
     end_time = "--"
     creation_time = "--"
     queued_time = "--"
+    failure_message = ""
 
     def getTitle(self):
         return self.title
@@ -93,10 +91,27 @@ class Job(Item):
     def endNow(self):
         self.end_time = datetime.now()
 
+    def getCreationTime(self):
+        if self.creation_time == "--":
+            return self.creation_time
+        return self.creation_time.strftime('%Y-%m-%d %H:%M:%S')
+
+    def getStartTime(self):
+        if self.start_time == "--":
+            return self.start_time
+        return self.start_time.strftime('%Y-%m-%d %H:%M:%S')
+
+    def getEndTime(self):
+        if self.end_time == "--":
+            return self.end_time
+        return self.end_time.strftime('%Y-%m-%d %H:%M:%S')
+
     def getDuration(self):
-        if self.start_time is "--" or self.end_time is "--":
+        if self.start_time == "--" and self.end_time == "--":
             return "--"
-        return (self.end_time - self.start_time)
+        elif self.end_time == "--":
+            return str(datetime.now() - self.start_time)
+        return str(self.end_time - self.start_time)
 
     def getVMTitle(self):
         return self.virtualMachine.to_object.title
@@ -107,7 +122,6 @@ class Job(Item):
     def getId(self):
         return self.id
 
-   
 
 # View class
 # The view will automatically use a similarly named template in
@@ -134,10 +148,6 @@ def createJob(job, event):
     ## assign time upon job creation_time.
     job.creation_time = datetime.now()
 
-    ## create authorization token
-    job.monitorAuthToken = ''.join(random.choice(string.ascii_lowercase +
-                                   string.digits) for _ in range(AUTH_TOKEN_LENGTH))
-
     ## Do not queue the job if status is not Queued
     if job.job_status != "Queued":
         job.job_status = "Pending"
@@ -147,7 +157,7 @@ def createJob(job, event):
     virtualMachine = getToolByName(job, 'virtualMachine').to_object
     context = aq_inner(job)
     result = virtualMachine.start_machine(context, job)
-    logger.info('Result of vm.start_machine is' + str(result))
+    logger.info('Result of vm.start_machine is: ' + str(result))
 
 
 class changeJobStatus(grok.View):

@@ -11,6 +11,7 @@ from cs492.plonemodeling import MessageFactory as _
 import json
 import logging
 from urlparse import parse_qs, urljoin
+import base64
 
 import socket
 import string
@@ -136,6 +137,7 @@ class VirtualMachine(Item):
         logger = logging.getLogger('Plone')
         logger.info('start_machine method called')
         if self.running_vm_id:
+            logger.info('A vm is already running, not starting a new vm: ' + str(self.running_vm_id))
             return False
 
         ploneLocation = "http://" + socket.gethostbyname(socket.gethostname()) + ":8080/"
@@ -284,8 +286,7 @@ class getNextJob(grok.View):
                 if next_job:
                     current_vm.current_job = next_job
                     next_job.job_status = 'Running'
-                    #next_job.start()
-
+                    next_job.startNow()
                     return json.dumps({
                         'response': 'OK',
                         'start_string': next_job.startString,
@@ -341,8 +342,10 @@ class updateJobStatus(grok.View):
             current_vm.lastAccessTime = str(datetime.now())
             if job_obj:
                 job_obj.job_status = new_status[0]
-                if parse_result['reason']:
-                    job_obj.error = parse_result['reason'][0]
+                if 'reason' in parse_result:
+                    decoded_reason = base64.b64decode(parse_result['reason'][0])
+                    logger.info('The job failed because: ' + decoded_reason)
+                    job_obj.failure_message = decoded_reason
                 job_obj.endNow()
                 # remove the object from the machine
                 current_vm.current_job = None

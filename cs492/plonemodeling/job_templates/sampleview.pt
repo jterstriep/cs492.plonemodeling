@@ -34,7 +34,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="python:context.creation_time.strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td><div tal:content="python:context.getCreationTime()"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -57,7 +57,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="python:context.creation_time.strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td><div tal:content="python:context.getCreationTime()"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -70,15 +70,15 @@
 	</tr>
 		<tr>
 		<td>Start Time: </td>
-		<td><div tal:content="python: context.start_time.strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td><div tal:content="python: context.getStartTime()"></div></td>
 	</tr>
 		<tr>
 		<td>End Time: </td>
-		<td><div tal:content="python: context.end_time.strftime('%Y-%m-%d %H:%M:%S')"> </div></td>
+		<td><div tal:content="python: context.getEndTime()"> </div></td>
 	</tr>
 	<tr>
 		<td>Duration: </td>
-		<td><div tal:content="python: context.getDuration().strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td><div tal:content="python: context.getDuration()"></div></td>
 	</tr>	
 	</table>
 
@@ -90,14 +90,16 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="python: context.creation_time.strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td><div tal:content="python: context.getCreationTime()"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
 		<td><div id = "job_status" tal:content="context/job_status"></div></td>
 	</tr>
-	
-	
+	<tr>
+		<td>Failure message: </td>
+		<td><div tal:content="context/failure_message"></div></td>
+	</tr>
 	<tr>
 		<td>Action: </td>
 		<td><div><button onclick = "changeJobStatus()">Queue</button></div></td>
@@ -113,7 +115,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="python:context.creation_time.strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td><div tal:content="python:context.getCreationTime()"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -126,15 +128,15 @@
 	</tr>
 		<tr>
 		<td>Start Time: </td>
-		<td><div tal:content="python:context.start_time.strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td><div tal:content="python:context.getStartTime()"></div></td>
 	</tr>
 		<tr>
 		<td>Terminate Time: </td>
-		<td><div> - </div></td>
+		<td><div tal:content="python:context.getEndTime()"></div></td>
 	</tr>
 	<tr>
 		<td>Duration: </td>
-		<td><div tal:content="python: context.getDuration().strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td><div tal:content="python: context.getDuration()"></div></td>
 	</tr>	
 	</table>
 
@@ -148,7 +150,8 @@
 		<td><a tal:attributes = "href python:context.getVMUrl()"><div tal:content="context/getVMTitle"></div></a></td>
 	</tr>
 	<tr>
-		<td><div tal:content="python:context.creation_time.strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td>Creation time:</td>
+		<td><div tal:content="python:context.getCreationTime()"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
@@ -161,12 +164,12 @@
 	</tr>
 		<tr>
 		<td>Start Time: </td>
-		<td><div tal:content="python:context.start_time.strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td><div tal:content="python:context.getStartTime()"></div></td>
 	</tr>
 		
 	<tr>
-		<td>Running Time : </td>
-		<td><div> - </div></td>
+		<td>Running Time: </td>
+		<td><div tal:content="python:context.getDuration()"></div></td>
 	</tr>
 
 	</table>
@@ -179,7 +182,7 @@
 	</tr>
 	<tr>
 		<td>Creation time: </td>
-		<td><div tal:content="python:context.creation_time.strftime('%Y-%m-%d %H:%M:%S')"></div></td>
+		<td><div tal:content="python:context.getCreationTime()"></div></td>
 	</tr>
 	<tr>
 		<td>Job status: </td>
