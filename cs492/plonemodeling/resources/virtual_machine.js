@@ -1,6 +1,6 @@
-function testMachine() {
+function testMachine(absolute_url) {
 	$("#testresults").html("Waiting...");
-	$.getJSON("test_machine", function(json) {
+	$.getJSON(absolute_url + "/test_machine", function(json) {
 		if (json.response == "OK") {
 			message = "Success";
 			document.getElementById("vm_status").innerHTML = "Valid";

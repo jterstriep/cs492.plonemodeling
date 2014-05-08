@@ -2,7 +2,7 @@ from five import grok
 
 from zope import schema
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
-from plone.dexterity.content import Container
+from plone.dexterity.content import Item
 from plone.supermodel import model
 from plone.namedfile.interfaces import IImageScaleTraversable
 from Products.CMFCore.utils import getToolByName
@@ -96,7 +96,7 @@ class IVirtualMachine(model.Schema, IImageScaleTraversable):
 # be instances of this class. Use this class to add content-type specific
 # methods and properties. Put methods that are mainly useful for rendering
 # in separate view classes.
-class VirtualMachine(Container):
+class VirtualMachine(Item):
     grok.implements(IVirtualMachine)
 
     # Add your class methods and properties here
@@ -205,7 +205,7 @@ class VirtualMachine(Container):
 
             if getToolByName(job_obj, 'virtualMachine').to_object == self and \
                 job_obj.job_status == 'Queued' and \
-                    (not next_job or next_job.modified.greaterThan(job_obj.modified)):
+                    (not next_job or next_job.modified().greaterThan(job_obj.modified())):
                 next_job = job_obj
         return next_job
 

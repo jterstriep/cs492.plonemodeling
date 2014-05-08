@@ -31,7 +31,7 @@
 		<td><div id=vm_status tal:content = "context/vm_status"></div></td>
 	</tr>
 	</table><br>
-	<input type="button" value="Test Machine" onclick="testMachine();"><div id="testresults"></div>
+	<input type="button" value="Test Machine" tal:attributes = "onclick string:testMachine('${context/absolute_url}')"><div id="testresults"></div>
 
 <div tal:condition = "python:context.vm_status == 'running'">
 	<br><div><b>This machine is running..</b></div><br>
