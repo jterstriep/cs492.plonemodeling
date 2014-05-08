@@ -136,13 +136,13 @@ class VirtualMachine(Item):
         if target_vm_id:
             conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
                                               aws_secret_access_key=self.secretKey)
-            reservations = conn.get_all_reservations()
-            for reservation in reservations:
-                instances = reservation.instances
-                for vm in instances:
-                    if vm.id == target_vm_id:
-                        return True
-            return False
+            reservations = conn.get_all_instances(instance_ids=[target_vm_id])
+            if reservations:
+                instance = reservations[0].instances[0]
+                status = instance.update()
+                return status not in ['terminated', 'stopped']
+            else:
+                return False
         else:
             return False
 
