@@ -133,10 +133,22 @@ class VirtualMachine(Item):
                                             + string.digits) for _ in range(AUTH_TOKEN_LENGTH))
             return self.monitorAuthToken
 
+    def is_vm_running(self, target_vm_id=None):
+        target_vm_id = target_vm_id | self.running_vm_id
+        conn = boto.ec2.connect_to_region(self.region, aws_access_key_id=self.accessKey,
+                                          aws_secret_access_key=self.secretKey)
+        reservations = conn.get_all_reservations()
+        for reservation in reservations:
+            instances = reservation.instances
+            for vm in instances:
+                if vm.id == target_vm_id:
+                    return True
+        return False
+
     def start_machine(self, job_context, job):
         logger = logging.getLogger('Plone')
         logger.info('start_machine method called')
-        if self.running_vm_id:
+        if self.is_vm_running():
             logger.info('A vm is already running, not starting a new vm: ' + str(self.running_vm_id))
             return False
 
