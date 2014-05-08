@@ -1,0 +1,91 @@
+Virtual Machine Content Type
+
+Interface:
+
+	Schema:
+
+	region_list
+		A vocabulary providing a selection of regions. 	Currently, the options are us-east-1, us-west-1, and us-west 2
+
+	instance_type_list
+		A vocabulary providing a selection of instance types. Currently, the only option is t1.micro.
+
+	accessKey
+		A TextLine requesting an AWS Access Key
+
+	secretKey
+		A TextLine requesting an AWS Secret Key
+
+	machineImage
+		A TextLine requesting an identifier for an AMI
+
+	monitorAuthToken
+		A TextLine requesting an a monitor authorization token. The monitor authorization token is generated automatically
+
+	lastAccessTime
+		A TextLine recording the last time that the virtual machine was polled by the associated monitor script
+
+Virtual Machine Class:
+
+	Fields:
+		vm_status
+		test_vm_hash
+		last_test_respone_time
+		running_vm_id
+
+	Methods:
+		get_next_key(self):
+			returns its own monitorAuthToken
+
+		get_status(self):
+			returns its own status
+
+		getTitle
+			return its own title
+
+		getInstanceStatus(self):
+			Connects to the virtual machine it represents and returns the status of the virtual machine
+
+		get_monitor_key(self):
+			Generates and returns a random monitorAuthToken of length 10 from lowercase characters and digits.
+
+		start_machine(self, job_context, job):
+			Uses gethostbyname to find the location of the plone site. Connects to ec2 usisng boto and creates a reservation, 				passing the script to the virtual machine as user data. Checks the status of the reservation every 10 seconds. When 				the status of the reservation is no longer pending, sets the running_vm_id to the id of the reservation.
+			Returns true if the machine starts correctly. Otherwise an error is generated.		
+
+		is_authorized_monitor(self, hashkey):
+			returns true if monitorAuthToken is the same as hashkey. Otherwise returns false
+
+		find_next_job(self, catalog):
+			Uses unrestrictedSearch to find all jobs of content type job. Searches through the jobs and finds the next job 				associated to this virtual machine that has been queued and has the least recent time of last modification. Returns 				the job object that it identifies.
+
+global functions:
+	createVM(vm, event):
+
+	createVM is subscribed to IObjectAddedEvent event of an IVirtualMachine. Sets current_job to None and vm_status to unevaluated.
+
+class getNextJob(grok.View):
+	getNextJob is a service by which the Monitor can request the next job from the Plone Site
+
+	Parses a query from Plone, returns a json object
+	json object contains NOTOK if monitor authorization is not sent correctly or if another job is already running.
+	Finds the next job to run, sets its status to Running and starts the job. 
+	Returns a json object containing OK and the job's start string.
+	If no jobs are left to run, return NOTOK and the message "no jobs to be run"
+	
+class updateJobStatus(grok.View):
+	updateJobStatus is a service by which the Monitor can update the job's status.
+	Parses a query from Plone, returning a json object.
+	Returns NOTOK if the hash to authorize the request is not provided or a new status is not present, with an appropriate message.
+	If the status to set is not Finished or Failed, returns response failed, with messsage Invalid new status.
+
+class provideStatus(grok.View):
+	provideStatus is a service by which the Monitor can request the current status of the job from the Plone. 
+
+	The service parses a query from the monitor, returning a json object containing NOTOK if the monitor authorization token is not sent 		correctly and returning a json object with the job's current status otherwise.
+
+
+
+
+
+		
