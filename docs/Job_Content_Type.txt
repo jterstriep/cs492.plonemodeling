@@ -1,0 +1,77 @@
+Job Content Type
+
+Interface:
+
+	Schema:
+
+	startString 
+		Textline storing the command used to start the associated model
+
+	job_status 
+		Choice from a vocabulary defining the possible states of a job. Defaults to Pending
+
+	virtualMachine
+		 Associates a virtual machine object to the job
+
+Job Class:
+
+	Fields:
+
+	start_time
+	end_time
+	creation_time
+	queued_time
+	failure_message
+
+	Methods:
+
+	getTitle(self)
+		Returns the job's title
+	
+	getStatus(self)
+		Returns the job's status
+
+	startNow(self)
+		Sets the start time of the job to the current time using a datetime object
+
+	endNow(self)
+		Sets the end time of the job to the current time using a datetime object
+
+	getCreationTime(self)
+		Returns the time the job was created, or “--” if no creation time exists
+
+	getStartTime(self)
+		Returns the time the job was started, or “--” if no start time exists
+
+	getEndTime(self)
+		Returns the time the job ended, or “--” if no end time exists
+
+	getDuration(self)
+		Returns the different between the start time and end time, or “--” if either is undefined
+
+	getVMTitle(self)
+		Returns the title of the Virtual Machine associated to the job
+
+	getVMUrl(self)
+		Returns the absolute path of the associated Virtual Machine
+
+	getID(self)
+		Returns the ID of the job
+
+Global Methods:
+
+	createJob(job, event):
+
+		createJob is subscribed to the IobjectAddedEvent event for Ijob
+
+		createJob sets the job creation time to the current time, sets the job's status to Pending if the job 
+		is not currently in the Queued state, sets the job's queued_time to the current time, and finally gets 	
+		the job's virtual machine and calls it's start_machine method
+
+	job_changed(job, event):
+
+		job_changed is subscribed to the IobjectModifiedEvent event for Ijob
+
+		If the job has status Queued and no associated queued_time, we know that the job was recently
+		queued, so we get the virtual machine of he job and call its start_machine method and set the
+		job's queued time to the current time. Otherwise the job's queued_time is set to null.
