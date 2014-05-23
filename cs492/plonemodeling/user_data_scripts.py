@@ -1,6 +1,6 @@
 
 MONITOR_SCRIPT = """#!/bin/bash
-    MONITOR_LOCATION="https://raw.github.com/falkrust/PloneMonitor/master/monitor.py"
+    MONITOR_LOCATION="https://raw.githubusercontent.com/jterstriep/PloneMonitor/master/monitor.py"
     MONITOR_FNAME="monitor.py"
 
     function monitor_setup {
